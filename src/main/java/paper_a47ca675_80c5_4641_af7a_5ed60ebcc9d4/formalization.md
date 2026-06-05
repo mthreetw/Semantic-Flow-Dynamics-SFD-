@@ -583,6 +583,7 @@ OperatorBoundaryTheorem 挑戰條件：
 | AmericanBeliefSet | LawAboveMan, InviolableIndividual, GovernmentByConsent, SelfGovernance, CommerceAsVirtue | |
 | MultiCoreStructure | AmericanBeliefSet | |
 | MultiCoreTension | MultiCoreStructure | 引用 MultiCoreStructure |
+| ThreatSet | AmericanBeliefSet | ⊂ 關係降格為 field |
 | BeliefCounting | AmericanBeliefSet | |
 | CalibrationSpiral | MultiCoreStructure | |
 | AutonomousBody | MultiCoreStructure | |
