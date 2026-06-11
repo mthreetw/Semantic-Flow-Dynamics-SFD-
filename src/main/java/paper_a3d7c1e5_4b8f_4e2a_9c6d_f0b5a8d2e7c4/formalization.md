@@ -46,7 +46,7 @@ StructuralGap ≡ ExamCriterion 與 ModelingCapability 之間的結構差異
   40a22ff8-9d90-4e1e-82f6-1fd80917c139.PositiveFeedbackLoop
 
 知見障：
-  40a22ff8-9d90-4e1e-82f6-1fd80917c139.KnowledgeBarrier
+  40a22ff8-9d90-4e1e-82f6-1fd80917c139.EpistemicBarrier
 
 本文不使用框架之外的預設。
 框架不含價值判斷。本文的價值觀是模型的變量，不是框架的成分。
@@ -190,7 +190,7 @@ Criterion ≡ 循環的錨。所有下游環節被錨拉住。當前錨：高考
 Execution ≡ 學校執行。當前操作：背誦（ForceCoupling 下的最低成本解）
 
 Output ≡ 循環的輸出
-  40a22ff8-9d90-4e1e-82f6-1fd80917c139.KnowledgeBarrier 在 Output 中代際傳遞
+  40a22ff8-9d90-4e1e-82f6-1fd80917c139.EpistemicBarrier 在 Output 中代際傳遞
   Output 是模型簡化：大量人在 Execution 過程中被篩掉。被篩掉的人是循環的燃料，不是產品
 
 Reception ≡ 社會接收。匹配（穩定）∨ 落差（毒打）

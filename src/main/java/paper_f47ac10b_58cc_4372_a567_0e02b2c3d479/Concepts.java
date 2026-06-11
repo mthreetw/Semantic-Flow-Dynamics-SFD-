@@ -39,7 +39,7 @@ public class Concepts {
     // 消音——正反饋循環和知見障在制度層面的可觀察效果
     public record Silencing(
         paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.PositiveFeedbackLoop cycle,
-        paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.KnowledgeBarrier knowledgeBarrier
+        paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.EpistemicBarrier EpistemicBarrier
     ) {}
 
     // === 信模三組件（§1.2）===

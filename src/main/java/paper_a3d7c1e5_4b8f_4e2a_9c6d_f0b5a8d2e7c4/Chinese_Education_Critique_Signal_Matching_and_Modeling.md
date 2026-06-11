@@ -143,7 +143,7 @@ Three closed loops. The main loop determines what the cycle runs. The self-repli
 
 **Execution — School execution.** Current operation: memorization (the lowest-cost solution under the coupling of four forces). Execution self-reinforces through positive feedback—admission rate is authority capital, authority attracts students and resources, local governments use admission rates as political achievements. The Hengshui model is the product of Execution's self-reinforcement loop run to its extreme.
 
-**Output — The cycle's output.** Output does not only enter Reception; it simultaneously flows back—becoming teachers, parents, policymakers. The cycle runs itself using its own products. Epistemic barrier (40a22ff8-9d90-4e1e-82f6-1fd80917c139.KnowledgeBarrier) is transmitted intergenerationally here. Output is a model simplification: large numbers of people are screened out during Execution (dropouts, eliminations, middle school tracking). Those screened out are the cycle's fuel, not its products.
+**Output — The cycle's output.** Output does not only enter Reception; it simultaneously flows back—becoming teachers, parents, policymakers. The cycle runs itself using its own products. Epistemic barrier (40a22ff8-9d90-4e1e-82f6-1fd80917c139.EpistemicBarrier) is transmitted intergenerationally here. Output is a model simplification: large numbers of people are screened out during Execution (dropouts, eliminations, middle school tracking). Those screened out are the cycle's fuel, not its products.
 
 **Reception — Social reception.** Match (stability) or gap (reckoning).
 

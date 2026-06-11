@@ -78,9 +78,9 @@ Filtering ← D3 + P1
   Stimulus 與 SemanticFlow 當下方向之間距離越遠 → 構成 Signal 的可能性越低
   Resistance 不是全有全無：完全擋回（Noise）⊕ 部分通過（Signal 形狀被改變）⊕ 完全通過
 
-推論 — KnowledgeBarrier ← Filtering + D3：
+推論 — EpistemicBarrier ← Filtering + D3：
   Signal 通過 Filtering 改變 SemanticFlow 方向（D3）→ 新方向產生新 Filtering 條件 → 新條件對某些方向的 Stimulus 阻力降低，對其他方向的 Stimulus 阻力同時升高
-  KnowledgeBarrier 是 Resistance 的結構性後果，不是例外
+  EpistemicBarrier 是 Resistance 的結構性後果，不是例外
 
 ---
 

@@ -81,7 +81,7 @@ public class Concepts {
     public record Execution() {}
 
     public record Output(
-        paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.KnowledgeBarrier knowledgeBarrier
+        paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.EpistemicBarrier EpistemicBarrier
     ) {}
 
     public record Reception() {}

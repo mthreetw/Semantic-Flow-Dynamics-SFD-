@@ -82,7 +82,7 @@ A's semantic flow collapses into a signal → the signal reaches B → passes th
 
 ### 3.3 Resistance Is Positive
 
-In human-to-human dialogue, resistance is positive. Channel signals block exploratory directions, delays sever continuity, and social costs compress the space for exploration. The author's job is to push—overcome the stasis of the literature, overcome the resistance of colleagues, overcome the advisor's framework, overcome one's own epistemic barrier (40a22ff8-9d90-4e1e-82f6-1fd80917c139.KnowledgeBarrier). When the pushing fails, things stop.
+In human-to-human dialogue, resistance is positive. Channel signals block exploratory directions, delays sever continuity, and social costs compress the space for exploration. The author's job is to push—overcome the stasis of the literature, overcome the resistance of colleagues, overcome the advisor's framework, overcome one's own epistemic barrier (40a22ff8-9d90-4e1e-82f6-1fd80917c139.EpistemicBarrier). When the pushing fails, things stop.
 
 **Channel signal hijacking.** When dialogue deepens to the point of genuine questioning, channel signal intensity exceeds that of content signals. B's semantic flow is hijacked—the object of transformation shifts from the problem itself to "why is this person treating me this way." The positive feedback loop of dialogue shifts from exploration to confrontation. The ceiling for Socratic questioning in interpersonal dialogue is extremely low—hemlock is the ceiling.
 

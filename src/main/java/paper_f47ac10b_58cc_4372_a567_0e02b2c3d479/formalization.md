@@ -62,7 +62,7 @@ FunctionalDeath ≡ SFD.PositiveFeedbackLoop 的永久斷裂
 
 ### 消音
 
-Silencing ≡ SFD.PositiveFeedbackLoop ∧ SFD.KnowledgeBarrier 在制度層面的可觀察效果
+Silencing ≡ SFD.PositiveFeedbackLoop ∧ SFD.EpistemicBarrier 在制度層面的可觀察效果
   ¬ 獨立機制
   當 PositiveFeedbackLoop 通過控制 Signal 環境塑造所有 Individual 的 SemanticFlow 方向時 → 替代性輸出從源頭不被產出
   ¬ 壓制替代方案，替代方案從未出現
@@ -201,7 +201,7 @@ Reconstruction（重建）：
 
 Inference₁: 改革路徑不存在
   CoreXin 要求唯一中心 ∧ 政治改革 = 限制中心 ∨ 製造獨立節點
-  → 結構性矛盾 → KnowledgeBarrier 對此方向 Resistance 最大化
+  → 結構性矛盾 → EpistemicBarrier 對此方向 Resistance 最大化
 
 Inference₂: Garment 庫存不可逆趨近於零
   歷史可用 Garment 逐一失效 ← Instability 外部來源（不可逆）

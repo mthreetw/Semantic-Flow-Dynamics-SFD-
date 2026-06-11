@@ -38,7 +38,7 @@ public class Concepts {
     public record Resistance() {}
 
     // 知見障——過濾的推論：信號改變語意流方向後產生新的過濾條件
-    public record KnowledgeBarrier(Filtering filtering) {}
+    public record EpistemicBarrier(Filtering filtering) {}
 
     // 過濾——語意流的當下方向決定什麼構成信號、什麼構成噪音
     public record Filtering(Resistance resistance) {}

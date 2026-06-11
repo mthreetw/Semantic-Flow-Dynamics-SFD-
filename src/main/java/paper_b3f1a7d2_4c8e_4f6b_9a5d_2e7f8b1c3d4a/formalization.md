@@ -206,7 +206,7 @@ MultiParticipant ← TaijiCollapseLoop
 
   結構性優勢：
   不同 individual 有不同 Xin → 40a22ff8-9d90-4e1e-82f6-1fd80917c139.Filtering 條件不同 → Transformation 方向不同
-  一個 individual 的 40a22ff8-9d90-4e1e-82f6-1fd80917c139.KnowledgeBarrier ◇ 被另一個 individual 的 Xin 突破
+  一個 individual 的 40a22ff8-9d90-4e1e-82f6-1fd80917c139.EpistemicBarrier ◇ 被另一個 individual 的 Xin 突破
     從 40a22ff8-9d90-4e1e-82f6-1fd80917c139.BlackBoxLaw 推出：不同 individual 的 SemanticFlow 不同 → Filtering 條件不同 → 一方的障礙對另一方可能不構成障礙
   individual 之間互動通過 AI 中介 → ChannelSignal 被隔開一層（未完全消除，但低於面對面）
 
