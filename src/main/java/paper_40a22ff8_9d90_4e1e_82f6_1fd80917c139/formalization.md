@@ -1,322 +1,451 @@
-論文：《語意流動力學 v5.0》
+約束版本：v4.0
+論文：《語意流動力學》
 英文標題：Semantic Flow Dynamics
 UUID：40a22ff8-9d90-4e1e-82f6-1fd80917c139
 引用：無
+使用原語：個體, 刺激, 死亡
+外部詮釋：無
 
 ---
 
-## 原語與定義
+## 原語引用
 
-來源：論文第一節
+來源：論文第 1.1 節
 
-原語（不定義，只指認）：
-- Individual — 可指認的存在
-- Stimulus — 到達個體的一切（外部或內部）
+本篇使用 core 原語：
+- 個體
+- 刺激
+- 死亡
 
-定義：
-- D1: Xin ≡ 個體的意識狀態
-  - ¬∃CompleteDescription: Xin → CompleteDescription（不可還原）
-  - ¬∃Enumeration: Xin → {Aspect₁, Aspect₂, ..., Aspectₙ}（不可窮舉）
-  - 可由效果觀察
+原語不定義，只指認。語意邊界見 core/formalization.md。
 
-- D2: SemanticFlow ≡ dXin/dt（信持續變化的過程）
+---
 
-- D3: Signal(Stimulus, Individual) ↔ ΔDirection(SemanticFlow, Stimulus) ≠ 0
-  Noise(Stimulus, Individual) ↔ ΔDirection(SemanticFlow, Stimulus) = 0
-  判定在 Individual 端，不在 Stimulus 端
+## 定義：信、語意流、信號、噪音
 
-補充定義：
-- SignalContainer ≡ 信號停留的物理或數位載體（書本、聲波、建築、數位檔案）
-  SignalContainer 儲存和傳遞 Signal，不產生 SemanticFlow
+來源：論文第 1.2 節
 
-- Channel ≡ Signal 從一個 Individual 到達另一個 Individual 的路徑
-  Channel 攜帶自我宣稱的 Signal，不攜帶可驗證的來源
+### 結構（→ Java）
 
-- Trust ≡ SemanticFlow 對特定 Channel 上的加權
+信 ≡ {個體}
+
+語意流 ≡ {信}
+
+信號 ≡ {刺激}
+
+噪音 ≡ {刺激}
+
+### 形式定義（僅形式邏輯層）
+
+D1: 信(i) — 個體 i 的意識狀態
+  ¬∃f: 信(i) → 完整描述
+  ¬∃enum: 信(i) → {x₁, x₂, ..., xₙ}
+
+D2: 語意流(i) = d信(i)/dt
+
+D3: 信號(σ, i) ↔ Δ方向(信(i), σ) ≠ 0
+    噪音(σ, i) ↔ Δ方向(信(i), σ) = 0
+
+信號與噪音由接收端個體的信決定，非發送端決定。同一刺激對不同個體可為信號或噪音。
+
+---
+
+## 補充定義：信號容器、通道、信任
+
+來源：論文第 1.3 節
+
+### 結構（→ Java）
+
+信號容器 ≡ {信號}
+
+通道 ≡ {信號, 信號容器}
+
+信任 ≡ {語意流, 通道}
+
+### 說明（僅形式邏輯層）
+
+信號容器 儲存 信號
+¬(信號容器 → 語意流)
+
+通道 可經過 信號容器
+通道 攜帶自我宣稱的信號
+
+同一信號經不同信任程度的通道 → 語意流方向變化不同
 
 ---
 
 ## 公設
 
-來源：論文第二節
+來源：論文第 2.1 節
 
-P1 流變律（FluxLaw）：
-  ∀Individual ∀Time: Xin(Individual, Time+1) ≠ Xin(Individual, Time)
-  語意流持續運作，不存在靜止時刻
+公設為 Postulate 實例，不建立 record，不進入 Java 結構層。
 
-P2 黑箱律（BlackBoxLaw）：
-  ¬∃Function: Xin(Individual, Time+1) = Function(Xin(Individual, Time), Signal(Time))
-  語意流的下一刻方向不可由當下方向與信號決定
+P1 流變律：∀個體 ∀t: 信(個體, t+1) ≠ 信(個體, t)
+P2 黑箱律：¬∃f: 信(個體, t+1) = f(信(個體, t), 信號(t))
+P3 損耗律：¬∃g: 語意流(個體) → 信號 · Lossless(g)
+P4 死亡律：死亡(個體) → 語意流(個體) terminates ∧ ¬∃recovery
 
-P3 損耗律（DissipationLaw）：
-  ¬∃Encoding: SemanticFlow(Individual) → Signal · Lossless(Encoding)
-  語意流不可還原為信號
+### 挑戰條件（僅形式邏輯層）
 
-P4 死亡律（DeathLaw）：
-  Death(Individual) → SemanticFlow(Individual) terminates ∧ ¬∃Recovery
-  個體消亡，語意流不可恢復
-
-公設的認識論位置：
-  公設是公設，不是經驗假說。類似歐幾里得平行公設——選擇接受或不接受
-
-挑戰條件（可證偽條件）：
-  挑戰 P1：∃Individual ∃Time: Xin(Individual, Time+1) = Xin(Individual, Time)
-  挑戰 P2：∃Function: ∀Individual ∀Time: Xin(Individual, Time+1) = Function(Xin(Individual, Time), Signal(Time))
-  挑戰 P3：∃Encoding: SemanticFlow(Individual) → Signal · Lossless(Encoding)
-  挑戰 P4：∃Recovery: Death(Individual) → SemanticFlow(Individual) resumes
+挑戰 P1：證明 ∃t: 語意流(個體, t) = 語意流(個體, t+1)
+挑戰 P2：證明 ∃f: ∀個體 ∀t: 信(個體, t+1) = f(信(個體, t), 信號(t))
+挑戰 P3：證明 ∃g: 語意流(個體) → 信號 · Lossless(g)
+挑戰 P4：證明 死亡(個體) → ◇recovery(語意流(個體))
 
 ---
 
-## 過濾
+## 過濾、阻力、知見障
 
-來源：論文第三節第一小節
+來源：論文第 3.1 節
 
-Filtering ← D3 + P1
-  從 D3 + P1 推出：SemanticFlow 的當下方向決定哪些 Stimulus 構成 Signal、哪些構成 Noise。同一 Stimulus 進入不同方向的 SemanticFlow，結果不同。這個選擇性即 Filtering
+### 結構（→ Java）
 
-性質 — Resistance：
-  Stimulus 與 SemanticFlow 當下方向之間距離越遠 → 構成 Signal 的可能性越低
-  Resistance 不是全有全無：完全擋回（Noise）⊕ 部分通過（Signal 形狀被改變）⊕ 完全通過
+阻力 ≡ {}
 
-推論 — EpistemicBarrier ← Filtering + D3：
-  Signal 通過 Filtering 改變 SemanticFlow 方向（D3）→ 新方向產生新 Filtering 條件 → 新條件對某些方向的 Stimulus 阻力降低，對其他方向的 Stimulus 阻力同時升高
-  EpistemicBarrier 是 Resistance 的結構性後果，不是例外
+過濾 ≡ {語意流, 阻力}
 
----
+知見障 ≡ {過濾, 阻力}
 
-## 轉化
+### 推導（僅形式邏輯層）
 
-來源：論文第三節第二小節
+過濾 ← D3 + P1：
+  D3：信號(σ, i) ↔ Δ方向(信(i), σ) ≠ 0
+  P1：語意流持續運作 → 信的方向在每一刻都在變
+  ⇒ 信的當下方向決定哪些刺激構成信號、哪些構成噪音
+  ⇒ 過濾是語意流對刺激的選擇性
 
-Transformation ← P2
-  從 P2 推出：Signal 通過 Filtering 進入 SemanticFlow 後，方向改變不可預測。同一 Signal 進入不同 SemanticFlow 產生不同方向變化，進入同一 SemanticFlow 的不同時刻也產生不同方向變化
+阻力 ← 過濾的性質：
+  刺激與語意流當下方向之間的距離越遠 → 構成信號的可能性越低
+  阻力不是全有全無：完全擋回（噪音）∨ 部分通過 ∨ 完全通過
 
-性質 — ObserverEffect ← P2：
-  所有觀察 SemanticFlow 的努力本身是新 Stimulus
-  → 若構成 Signal（通過 Filtering）→ 改變 SemanticFlow 方向（進入 Transformation，P2）
-  → 觀察到的永遠不是觀察前的方向
-  從 P2 推出：觀察即介入，非技術限制
-
----
-
-## 坍塌
-
-來源：論文第三節第三小節
-
-Collapse ← P3
-  從 P3 推出：Individual 將 SemanticFlow 輸出（說、寫、畫、做）→ 必須編碼為 Signal → P3 保證編碼必然有損 → SemanticFlow 從持續過程變為離散 Signal，此轉變即 Collapse
-
-性質 — ExpressionGap ← P3：
-  SemanticFlow 與輸出 Signal 之間不可能完全對應
-  從 P3 推出：損耗律的結構性推論
-
-性質 — SignalDistortion：
-  Individual 的輸出持續、可觀察地偏向特定方向 → SignalDistortion
-  框架不判斷 SignalDistortion 是蓄意或無意——意圖在 SemanticFlow 內部，不可觀察（P2）
+知見障 ← D3 + 過濾 + 阻力：
+  信號通過過濾 → 改變語意流方向（D3）→ 新的過濾條件
+  新條件：某些方向阻力降低 ∧ 其他方向阻力升高
+  知見障是過濾產生的阻力結構性後果
 
 ---
 
-## 基本功能的組合
+## 轉化、觀察者效應
 
-來源：論文第三節第四小節
+來源：論文第 3.2 節
 
-Filtering ∧ Transformation ∧ Collapse 在每一次 Signal 接收中同時運作
-在時間中反覆組合 → 產生可觀察的行為模式
-框架不提供封閉的組合清單——三個基本功能是字母表，可觀察現象是組合
+### 結構（→ Java）
 
----
+轉化 ≡ {語意流}
 
-## 正反饋循環
+觀察者效應 ≡ {轉化}
 
-來源：論文第四節第一小節
+### 推導（僅形式邏輯層）
 
-PositiveFeedbackLoop ← P1 + D3 + Collapse
-  從 P1 + D3 + Collapse 推出：
-  Individual_A.SemanticFlow → Collapse → Signal → 到達 Individual_B → Filtering → Transformation → Individual_B.SemanticFlow 方向改變 → Collapse → Signal → 到達 Individual_A → 循環
+轉化 ← P2：
+  P2：¬∃f: 信(個體, t+1) = f(信(個體, t), 信號(t))
+  ⇒ 信號通過過濾進入語意流後，方向改變不可預測
+  ⇒ 同一信號進入不同語意流 → 不同方向變化
+  ⇒ 轉化是信號在語意流中被處理的過程，結果不可由輸入決定
 
-個體層面：
-  Signal → Filtering 放行 → Transformation 改變 SemanticFlow 方向 → Collapse 為行為 → 行為結果成為新 Signal → 強化 SemanticFlow 既有方向 → 下次同樣 Signal 更易通過 Filtering（Resistance 降低）→ 回到起點
-  循環標註：個體層面正反饋循環
-  退出條件：P1 + P2 保證不穩定，見下節
-
-群體層面：
-  大量 Individual 在相似 Signal 環境中運作 → SemanticFlow 的 Filtering 和 Transformation 模式趨近 → 輸出 Signal 強化 Signal 環境 → Signal 環境塑造下一代 Individual 的 SemanticFlow → 循環跨 Individual 運作
-  循環標註：群體層面正反饋循環
-  退出條件：Instability（見下節）
-
-FunctionalConvergence ← P2：
-  大量 Individual 輸出 Signal 模式趨近（可觀察事實）
-  但 P2 保證每個 Individual 的 SemanticFlow 都不同，趨近永遠有殘差
-  FunctionalConvergence 是框架能宣稱的上限
+觀察者效應 ← P2 + D3：
+  ∀觀察(語意流): 觀察本身是新刺激
+  若該刺激構成信號（D3）→ 改變語意流方向 → 進入轉化（P2）
+  ⇒ 觀察到的 ≠ 觀察前的方向（觀察即介入）
 
 ---
 
-## 正反饋循環的不穩定性
+## 坍塌、表達落差、信號扭曲
 
-來源：論文第四節第二小節
+來源：論文第 3.3 節
 
-Instability ← P1 + P2 + P4
+### 結構（→ Java）
 
-內部來源（從公設推出）：
-  P1 → SemanticFlow 持續運作
+坍塌 ≡ {語意流, 信號}
+
+表達落差 ≡ {坍塌}
+
+信號扭曲 ≡ {}
+
+### 推導（僅形式邏輯層）
+
+坍塌 ← P3：
+  P3：¬∃g: 語意流(個體) → 信號 · Lossless(g)
+  ⇒ 個體將語意流輸出 → 必須編碼為信號 → 編碼必然有損
+  ⇒ 坍塌是語意流從持續過程變為離散信號的轉變
+
+表達落差 ← P3：
+  語意流與輸出信號之間不可能完全對應（P3 的結構性推論）
+
+信號扭曲：
+  個體的輸出持續、可觀察地偏向特定方向
+  框架不判斷扭曲是蓄意或無意——意圖在語意流內部，不可觀察（P2）
+
+---
+
+## 正反饋循環、功能性收斂
+
+來源：論文第 4.1 節
+
+### 結構（→ Java）
+
+正反饋循環 ≡ {過濾, 轉化, 坍塌}
+
+功能性收斂 ≡ {正反饋循環}
+
+### 推導（僅形式邏輯層）
+
+正反饋循環 ← 過濾 + 轉化 + 坍塌：
+  個體A語意流.坍塌 → 信號 → 個體B.過濾 → 個體B語意流.轉化 → 個體B語意流.坍塌 → 信號 → 個體A.過濾 → 回到起點
+
+  以上為循環結構，明確標註。
+  退出條件：不可由內部機制退出。P1 保證語意流持續運作。P4 保證個體死亡時語意流終止，但循環可跨個體存續。
+
+功能性收斂 ← P2：
+  大量個體的輸出信號模式趨近（可觀察事實）
+  P2 保證每個個體的語意流都不同 → 趨近永遠有殘差
+  功能性收斂是框架能宣稱的上限
+
+---
+
+## 循環不穩定性
+
+來源：論文第 4.2 節
+
+### 結構（→ Java）
+
+不穩定性內部來源 ≡ {}
+
+不穩定性外部來源 ≡ {信號容器}
+
+循環不穩定性 ≡ {正反饋循環, 不穩定性內部來源, 不穩定性外部來源}
+
+### 推導（僅形式邏輯層）
+
+不穩定性內部來源 ← P1 + P2 + P4：
+  P1 → 語意流持續運作
   P2 → 方向變化不可預測
-  P4 → Individual 不斷被替換且替換不可複製
-  → 循環內部殘差持續累積
+  P4 → 個體不斷被替換且替換不可複製
+  ⇒ 循環內部殘差持續累積
 
-外部來源（環境事實）：
-  循環依賴的 SignalContainer 在變，環境在變
-  SignalContainer 變化受循環約束，環境變化不受循環約束
-  → 當兩者變化方向持續分歧，落差在時間中擴大
+不穩定性外部來源 ← 環境事實：
+  信號容器在變（受循環約束）∧ 環境在變（不受循環約束）
+  兩者變化方向持續分歧 → 落差在時間中擴大
 
-內部殘差 ∧ 外部落差 同時作用
-維護循環的行動本身也受公設約束：維護者 SemanticFlow 在變（P1），效果不可預測（P2），維護者會死（P4）
-→ PositiveFeedbackLoop 沒有永續的可能，只有存續時間的長短
+□循環不穩定性 （從 P1 + P2 + P4 推出：正反饋循環沒有永續的可能）
 
 ---
 
 ## 代際替換
 
-來源：論文第四節第三小節
+來源：論文第 4.3 節
 
-GenerationalReplacement ← P4
-  從 P4 推出：Individual 死亡 → SemanticFlow 歸零且不可恢復
-  新一代 Individual 在不同 Signal 環境中形成 SemanticFlow → 人口比例改變 → 循環方向改變
+### 結構（→ Java）
 
-文明延續 ≠ 語意傳承（P2 + P3 否定語意傳承的可能）
-文明延續 ≡ 循環的狀態再生產
-  下一代在上一代留下的 Signal 環境中形成自己的 SemanticFlow → 這就是傳統
+代際替換 ≡ {死亡}
 
----
+### 推導（僅形式邏輯層）
 
-## 形式層與經驗層的分界
+代際替換 ← P4：
+  P4 → 個體死亡 → 語意流歸零且不可恢復
+  ⇒ 新一代個體在不同信號環境中開始運作 → 形成不同語意流
+  ⇒ 人口比例改變 → 循環方向改變
 
-來源：論文「形式層與經驗層的分界」段
-
-以上（原語、定義、公設、基本功能、正反饋循環、不穩定性、代際替換）= 形式層
-以下（驅動力、建模方法）= 經驗層
-
-經驗層工具來自經驗觀察，不來自公設推導
-不可窮舉，不必然成立
-可以不同意經驗層而不影響形式層
-
----
-
-## 框架不分類
-
-來源：論文第五節
-
-P1 → SemanticFlow 持續運作 → 不存在靜止的時刻 → 沒有靜止的東西可以被貼標籤
-模式 ≡ 建模的產物，不是建模的前提
-模式數量是顆粒度的函數 → 窮舉模式清單無意義
+文明延續 ≠ 語意傳承（P2 + P3 否定）
+文明延續 = 循環的狀態再生產
 
 ---
 
 ## 驅動力
 
-來源：論文第六節
+來源：論文第 6 節
 
-DrivingForce ≡ 在統計上更常推動 SemanticFlow 坍塌為輸出 Signal 的 Stimulus 類型
-清單不可窮舉，每一項不必然產生結果
+驅動力是經驗層工具。清單不可窮舉，不構成封閉分類，不使用 sealed interface。
 
-已識別的常見類型（開放清單，∨ 非互斥）：
+### 結構（→ Java）
 
-Survival — 飢餓、口渴、寒冷等內部 Stimulus，統計上最常推動 Collapse
-Security — 威脅製造緊迫度 → 壓低 Filtering 的 Resistance → 更快接受新 Signal → 更快 Collapse
-Power — 利益 ∧ 通道控制 ∧ SignalContainer 控制的組合。覆蓋循環每一環節
-MeaningSeeking — Individual 主動尋求新 Signal、主動進入 Transformation 的內在動力
-IdentityNeed — Individual 需要知道「我是誰」「我們是誰」→ 驅動合作，形成群體，維持邊界
+生存與物質利益 ≡ {刺激}
+
+安全與威脅 ≡ {刺激}
+
+權力 ≡ {通道, 信號容器}
+
+意義追尋 ≡ {信號, 轉化}
+
+認同需求 ≡ {語意流}
+
+### 說明（僅形式邏輯層）
+
+生存與物質利益：飢餓、口渴、寒冷等內部刺激在統計上最常推動坍塌
+
+安全與威脅：威脅製造緊迫度 → 在統計上壓低過濾的阻力 → 個體更快接受新信號 → 更快坍塌
+
+權力：利益 ∧ 通道控制 ∧ 信號容器控制 的組合
+  權力覆蓋循環每一環節：控制個體能接觸什麼信號、塑造信號環境、決定個體敢不敢輸出、決定輸出後果
+
+意義追尋：個體主動尋求新信號 ∧ 主動進入轉化的內在動力
+
+認同需求：個體尋找語意流方向趨近的其他個體 → 形成群體 → 維持邊界
 
 ---
 
 ## 循環替代模型
 
-來源：論文第七節第三至五小節
+來源：論文第 7.3 節
+
+### 結構（→ Java）
+
+循環形成 ≡ {正反饋循環, 信號}
+
+壓制 ≡ {權力, 信號}
+
+落差擴大 ≡ {信號容器, 信號}
+
+替換 ≡ {代際替換}
+
+穩定 ≡ {正反饋循環, 信號容器, 阻力}
+
+循環替代 ≡ {循環形成, 壓制, 落差擴大, 替換, 穩定}
+
+### 前置條件與階段推導（僅形式邏輯層）
 
 前置條件：
-  C₀: 既有循環，PositiveFeedbackLoop 穩定運作，SignalContainer 完整
+  C₀: 既有循環，正反饋穩定運作，信號容器完整
+  σ: 新信號進入，與 C₀ 方向不同
+  ∃S ⊂ C₀: 信號(σ, i) 對 S 中個體成立（D3）
 
-啟動：
-  NewSignal 進入，方向 ≠ C₀ 方向
-  ∃ IndividualSubset ⊂ C₀: Signal(NewSignal, IndividualSubset) 成立（D3）
+階段結構（有序，非循環）：
+  循環形成 → 壓制（條件性）→ 落差擴大 → 替換 → 穩定
 
-小循環形成：
-  IndividualSubset 互相強化輸出 → 形成 C₁
-  C₁ 輸出方向 ≠ C₀ 輸出方向 → C₁ ⊗ C₀
+循環形成：S 中個體互相強化輸出 → 形成新循環 C₁
+  C₁ 輸出方向 ≠ C₀ 輸出方向 → 對抗
 
 壓制（條件性）：
-  若 C₀ 擁有制度性 Power →
-    C₀ 壓制 C₁ 的 Signal 傳播、Individual 輸出、輸出後果
-    C₁ 被壓縮
-  若 NewSignal 已進入 SignalContainer → C₁ 不被消滅
+  條件：C₀ 擁有制度性權力
+  若條件成立 → C₀ 壓制 C₁ 的信號傳播、個體輸出、輸出後果 → C₁ 被壓縮
+  若 σ 已進入信號容器 → C₁ 不被消滅
+  若條件不成立 → 此階段跳過
 
-落差：
-  C₁ 持續產出新 Signal 強化自身
-  C₀ 無法產出新 Signal 支撐自身
-  C₀ 的 SignalContainer 宣稱與 Individual 實際接收 Signal 之間落差擴大
-  C₀ 開始空轉
+落差擴大：C₁ 持續產出新信號強化自身 ∧ C₀ 無法產出新信號支撐自身
+  C₀ 的信號容器宣稱與個體實際接收信號之間的落差擴大 → C₀ 開始空轉
 
-替換：
-  P4 持續作用 → C₀ 中帶舊 SemanticFlow 的 Individual 消亡
-  新 Individual 在包含 C₁ Signal 的環境中形成 SemanticFlow
-  新 Individual 輸出匯入 C₁ → C₀ PositiveFeedbackLoop 斷裂
+替換：死亡律持續作用 → C₀ 中帶舊語意流的個體消亡
+  新個體在包含 C₁ 信號的環境中形成語意流 → 新個體輸出匯入 C₁ → C₀ 正反饋斷裂
 
-穩定：
-  C₁ 成為主流循環
-  C₁ 建立 SignalContainer，產生 Resistance 結構
-  C₁ 開始自我保護 → C₁ 重複 C₀ 的結構性行為
-
-循環標註：C₁ 替代 C₀
-退出條件：四個必要條件全部滿足時替代完成
-
-必要條件（從模型推出，四者缺一不可）：
-
-NecessaryCondition₁: NewSignal 必須進入 SignalContainer
-  → 否則壓制可消滅 C₁
-
-NecessaryCondition₂: C₁ 必須有持續的新 Signal 源
-  → 否則 C₁ 不擴大
-
-NecessaryCondition₃: C₀ 必須無法產出對等的新 Signal
-  → 否則落差不擴大，C₀ 不空轉
-
-NecessaryCondition₄: P4 必須作用
-  → 否則 Resistance 結構不自然消退，代際替換不發生
-
-預測（從條件變量推出）：
-
-Power 壓制有無 → 影響替代速度，不影響替代方向（從四個必要條件推出）
-落差擴大速度 → 影響替代速度（從 NecessaryCondition₂ + NecessaryCondition₃ 推出）
-SignalContainer 耐久性 → 影響 C₁ 存活能力（從 NecessaryCondition₁ 推出）
+穩定：C₁ 成為主流循環
+  C₁ 建立信號容器 ∧ 產生阻力結構 → C₁ 開始自我保護 → C₁ 重複 C₀ 的結構性行為
 
 ---
 
-## 量化的空間與天花板
+## 必要條件
 
-來源：論文第八節
+來源：論文第 7.4 節
 
-框架禁止的不是數學化，是量化——給語意端賦數值
-P2 → 語意流內部不可穿透
-P3 → 語意端不可編碼為信號端數值
-→ 任何語意端賦值操作是虛構值，不是近似值
+### 結構（→ Java）
 
-Signal 端可量化（可觀察、可測量、可統計）
-但 Signal 端量化 ≠ SemanticFlow 端測量（Signal ≠ SemanticFlow，公設那道牆）
+信號容器進入 ≡ {信號, 信號容器}
 
-此天花板由公設決定，非技術限制
+持續新信號源 ≡ {信號}
+
+對等信號缺失 ≡ {信號}
+
+死亡壓力 ≡ {死亡}
+
+### 推導（僅形式邏輯層）
+
+∀循環替代完成，以下四個必要條件必須全部滿足：
+
+信號容器進入：新信號必須進入信號容器
+  ¬信號容器進入 → 壓制可消滅小循環
+
+持續新信號源：小循環必須有持續的新信號源
+  ¬持續新信號源 → 小循環不會擴大
+
+對等信號缺失：大循環無法產出對等的新信號
+  ¬對等信號缺失 → 落差不擴大 ∧ 大循環不空轉
+
+死亡壓力：死亡律必須作用
+  ¬死亡壓力 → 阻力結構不自然消退
+  代際替換是循環替代的時間條件
 
 ---
 
-## 適用範圍與限制
+## 預測
 
-來源：論文第十節
+來源：論文第 7.5 節
 
-適用：任何 Signal 到達 Individual 後產生 SemanticFlow 的現象
-不適用：不涉及 Individual 接收和處理 Signal 的純信號層問題
+以下為僅形式邏輯層的推導，不進入 Java。
 
-限制：
-  ¬ 處理真偽
-  ¬ 處理價值
-  ¬ 提供減少 Transformation 的方法
-  ¬ 預測時間
-  ¬ 追蹤 Individual 內心
-  框架表述本身是 Signal → 讀者 Xin 不同 → 讀出 SemanticFlow 不同 → 框架無法豁免自身公設
+權力壓制的有無影響替代速度，不影響替代方向：
+  有制度性壓制 → 替代慢
+  ¬制度性壓制 → 替代快
+  四個必要條件全部滿足 → 替代方向不變
+
+落差擴大速度影響替代速度：
+  新信號產出越快 ∧ 越不可否認 → 落差擴大越快 → 替代越快
+
+信號容器耐久性影響小循環存活能力：
+  信號容器越耐久 → 壓制越難消滅小循環
+
+---
+
+## 量化邊界
+
+來源：論文第 8 節
+
+以下為僅形式邏輯層的推導，不進入 Java。
+
+信號端可量化（輸出模式可觀察、可測量、可統計）
+語意端不可量化（P2 + P3：語意流不可穿透、不可還原為信號）
+
+⇒ 任何將數值賦予語意現象的操作 → 假裝穿透了不可穿透的黑盒
+⇒ 框架的量化天花板由公設決定，非技術限制
+
+---
+
+## 概念摘要
+
+本文原生概念：
+  信 (Xin)
+  語意流 (SemanticFlow)
+  信號 (Signal)
+  噪音 (Noise)
+  信號容器 (SignalContainer)
+  通道 (Channel)
+  信任 (Trust)
+  過濾 (Filtering)
+  阻力 (Resistance)
+  知見障 (EpistemicObstacle)
+  轉化 (Transformation)
+  觀察者效應 (ObserverEffect)
+  坍塌 (Collapse)
+  表達落差 (ExpressionGap)
+  信號扭曲 (SignalDistortion)
+  正反饋循環 (PositiveFeedbackLoop)
+  功能性收斂 (FunctionalConvergence)
+  循環不穩定性 (CycleInstability)
+  不穩定性內部來源 (InternalInstabilitySource)
+  不穩定性外部來源 (ExternalInstabilitySource)
+  代際替換 (GenerationalReplacement)
+  循環替代 (CycleReplacement)
+  循環形成 (CycleFormation)
+  壓制 (Suppression)
+  落差擴大 (GapExpansion)
+  替換 (Substitution)
+  穩定 (Stabilization)
+  信號容器進入 (ContainerEntry)
+  持續新信號源 (ContinuousSource)
+  對等信號缺失 (CounterAbsence)
+  死亡壓力 (DeathPressure)
+  生存與物質利益 (Survival)
+  安全與威脅 (Safety)
+  權力 (Power)
+  意義追尋 (MeaningSeeking)
+  認同需求 (IdentityNeed)
+
+框架內引用概念：
+  無
+
+外部詮釋概念：
+  無
+
+---
+
+## 待決項
+
+無

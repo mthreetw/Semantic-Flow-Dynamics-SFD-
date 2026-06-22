@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>概念星圖</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#080c18;overflow:hidden;font-family:'PingFang TC','Noto Sans TC',system-ui,sans-serif}
+svg{display:block}
+.p{position:fixed;z-index:10;user-select:none}
+#tt{top:12px;left:14px}
+#tt span:first-child{color:#999;font-size:14px;font-weight:500}
+#tt span:last-child{color:#555;font-size:12px;margin-left:6px}
+#ct{top:12px;right:14px;display:flex;gap:3px;flex-wrap:wrap;justify-content:flex-end;max-width:240px}
+#ct button{background:transparent;color:#555;border:1px solid rgba(255,255,255,0.08);
+  border-radius:4px;padding:3px 9px;font-size:11px;cursor:pointer;font-family:inherit}
+#ct button:hover{background:rgba(255,255,255,0.06);color:#aaa}
+#ct button.on{background:rgba(255,255,255,0.1);color:#bbb}
+#lg{bottom:16px;left:14px;background:rgba(8,12,24,0.88);
+  border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:8px 12px;max-height:40vh;overflow-y:auto}
+#nf{bottom:16px;right:14px;background:rgba(8,12,24,0.9);
+  border:1px solid rgba(255,255,255,0.07);border-radius:6px;padding:10px 14px;
+  min-width:140px;display:none}
+#fi{top:40px;right:14px;color:#444;font-size:10px;text-align:right}
+#ht{bottom:6px;left:50%;transform:translateX(-50%);color:#282828;font-size:9px}
+</style>
+</head>
+<body>
+<div id="tt" class="p"><span>語意流動力學</span><span>概念星圖</span></div>
+<div id="ct" class="p">
+  <button id="ba" class="on">全部</button>
+  <button id="br">隨機 3 篇</button>
+  <button id="bs">↻ 打亂</button>
+</div>
+<div id="fi" class="p"></div>
+<div id="lg" class="p"></div>
+<div id="nf" class="p"></div>
+<div id="ht" class="p">滾輪縮放 · 拖曳平移 · 點擊鎖定</div>
+
+<script>
+var PAPERS = {"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32":{"label":"基於知識流動與語意流動的三大宗教認識論比較","color":"#e46767"},"core":{"label":"Core 原語","color":"#c8c8d0"},"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139":{"label":"語意流動力學","color":"#67e48b"}};
+var ALL_N = [{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.鎖定路徑","name":"鎖定路徑","chName":"鎖定路徑","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"core.個體","name":"個體","chName":"個體","group":"core","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.不穩定性內部來源","name":"不穩定性內部來源","chName":"不穩定性內部來源","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.坍塌","name":"坍塌","chName":"坍塌","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"core.死亡","name":"死亡","chName":"死亡","group":"core","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號扭曲","name":"信號扭曲","chName":"信號扭曲","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環替代","name":"循環替代","chName":"循環替代","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.過濾","name":"過濾","chName":"過濾","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.替換","name":"替換","chName":"替換","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器進入","name":"信號容器進入","chName":"信號容器進入","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.代際替換","name":"代際替換","chName":"代際替換","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.自組織路徑","name":"自組織路徑","chName":"自組織路徑","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器","name":"信號容器","chName":"信號容器","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環形成","name":"循環形成","chName":"循環形成","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限內","name":"認知極限內","chName":"認知極限內","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.不穩定性外部來源","name":"不穩定性外部來源","chName":"不穩定性外部來源","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限外","name":"認知極限外","chName":"認知極限外","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.轉化","name":"轉化","chName":"轉化","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.內化路徑","name":"內化路徑","chName":"內化路徑","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.語意流","name":"語意流","chName":"語意流","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.持續新信號源","name":"持續新信號源","chName":"持續新信號源","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.來源聲稱","name":"來源聲稱","chName":"來源聲稱","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限外知識","name":"認知極限外知識","chName":"認知極限外知識","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.蠱王路徑","name":"蠱王路徑","chName":"蠱王路徑","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.觀察者效應","name":"觀察者效應","chName":"觀察者效應","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"core.刺激","name":"刺激","chName":"刺激","group":"core","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.阻力","name":"阻力","chName":"阻力","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.準下行模式","name":"準下行模式","chName":"準下行模式","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.五階段模型","name":"五階段模型","chName":"五階段模型","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"core.空間","name":"空間","chName":"空間","group":"core","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.功能性收斂","name":"功能性收斂","chName":"功能性收斂","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.關閉通道","name":"關閉通道","chName":"關閉通道","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.死亡壓力","name":"死亡壓力","chName":"死亡壓力","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.知見障","name":"知見障","chName":"知見障","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.外化路徑","name":"外化路徑","chName":"外化路徑","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.意義追尋","name":"意義追尋","chName":"意義追尋","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.安全與威脅","name":"安全與威脅","chName":"安全與威脅","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限","name":"認知極限","chName":"認知極限","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.上行模式","name":"上行模式","chName":"上行模式","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環不穩定性","name":"循環不穩定性","chName":"循環不穩定性","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.權力","name":"權力","chName":"權力","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.表達落差","name":"表達落差","chName":"表達落差","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.無中央通道","name":"無中央通道","chName":"無中央通道","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.正反饋循環","name":"正反饋循環","chName":"正反饋循環","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.信號容器制度化","name":"信號容器制度化","chName":"信號容器制度化","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.落差擴大","name":"落差擴大","chName":"落差擴大","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.漂移","name":"漂移","chName":"漂移","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","name":"信號","chName":"信號","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.穩定","name":"穩定","chName":"穩定","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.對等信號缺失","name":"對等信號缺失","chName":"對等信號缺失","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.認同需求","name":"認同需求","chName":"認同需求","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.通道指定模式","name":"通道指定模式","chName":"通道指定模式","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.下行模式","name":"下行模式","chName":"下行模式","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.壓制","name":"壓制","chName":"壓制","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.蓋棺論定","name":"蓋棺論定","chName":"蓋棺論定","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"core.時間","name":"時間","chName":"時間","group":"core","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.生存與物質利益","name":"生存與物質利益","chName":"生存與物質利益","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.噪音","name":"噪音","chName":"噪音","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信","name":"信","chName":"信","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.通道","name":"通道","chName":"通道","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"},{"id":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.開放通道","name":"開放通道","chName":"開放通道","group":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32","type":"record"},{"id":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信任","name":"信任","chName":"信任","group":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139","type":"record"}];
+var ALL_L = [{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.鎖定路徑","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.鎖定路徑","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.轉化","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.鎖定路徑","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.正反饋循環","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.鎖定路徑","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.關閉通道","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.坍塌","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.語意流","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.坍塌","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環替代","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.穩定","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環替代","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.壓制","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環替代","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.落差擴大","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環替代","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環形成","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環替代","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.替換","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.過濾","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.語意流","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.過濾","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.阻力","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.替換","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.代際替換","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器進入","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器進入","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.代際替換","target":"core.死亡","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.自組織路徑","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.正反饋循環","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.自組織路徑","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.無中央通道","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.自組織路徑","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.轉化","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環形成","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.正反饋循環","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環形成","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.不穩定性外部來源","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.轉化","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.語意流","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.內化路徑","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.語意流","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.語意流","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.持續新信號源","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.來源聲稱","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.通道","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.來源聲稱","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限外","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限外知識","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.來源聲稱","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限外知識","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限外","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.蠱王路徑","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.開放通道","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.蠱王路徑","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.轉化","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.蠱王路徑","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.漂移","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.蠱王路徑","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.正反饋循環","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.觀察者效應","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.轉化","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.準下行模式","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.通道","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.準下行模式","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.五階段模型","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限外","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.五階段模型","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限內","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.五階段模型","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.五階段模型","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.五階段模型","target":"core.死亡","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.功能性收斂","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.正反饋循環","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.關閉通道","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.通道","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.死亡壓力","target":"core.死亡","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.知見障","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.阻力","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.知見障","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.過濾","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.外化路徑","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.外化路徑","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.意義追尋","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.意義追尋","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.轉化","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.安全與威脅","target":"core.刺激","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.上行模式","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.上行模式","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環不穩定性","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.正反饋循環","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環不穩定性","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.不穩定性外部來源","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.循環不穩定性","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.不穩定性內部來源","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.權力","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.通道","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.權力","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.表達落差","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.坍塌","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.無中央通道","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.通道","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.正反饋循環","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.過濾","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.正反饋循環","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.轉化","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.正反饋循環","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.坍塌","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.信號容器制度化","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.功能性收斂","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.信號容器制度化","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.落差擴大","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.落差擴大","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.漂移","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.功能性收斂","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.漂移","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.漂移","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.正反饋循環","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","target":"core.刺激","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.穩定","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.正反饋循環","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.穩定","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.穩定","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.阻力","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.對等信號缺失","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.認同需求","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.語意流","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.通道指定模式","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.通道","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.下行模式","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限外","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.下行模式","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.通道","cross":true,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.下行模式","target":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.認知極限內","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.壓制","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.權力","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.壓制","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.生存與物質利益","target":"core.刺激","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.噪音","target":"core.刺激","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信","target":"core.個體","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.通道","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號容器","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.通道","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信號","cross":false,"edgeType":"field"},{"source":"paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32.開放通道","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.通道","cross":true,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信任","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.通道","cross":false,"edgeType":"field"},{"source":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.信任","target":"paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.語意流","cross":false,"edgeType":"field"}];
+var pks = Object.keys(PAPERS).filter(function(k){return k!=='core';});
+var RC = Math.min(3, pks.length);
+if(pks.length<=RC) document.getElementById('br').style.display='none';
+else document.getElementById('br').textContent='隨機 '+RC+' 篇';
+
+var curSim = null;
+
+function filt(sel){
+  var ns = JSON.parse(JSON.stringify(ALL_N));
+  var ls = JSON.parse(JSON.stringify(ALL_L));
+  if(sel){
+    var gs = {}; sel.forEach(function(s){gs[s]=1;}); gs['core']=1;
+    ns = ns.filter(function(n){return gs[n.group];});
+    var ni = {}; ns.forEach(function(n){ni[n.id]=1;});
+    ls = ls.filter(function(l){return ni[l.source]&&ni[l.target];});
+  }
+  var deg = {};
+  ns.forEach(function(n){deg[n.id]=0;});
+  ls.forEach(function(l){deg[l.source]=(deg[l.source]||0)+1;deg[l.target]=(deg[l.target]||0)+1;});
+  ns.forEach(function(n){n.degree=deg[n.id]||0;});
+  ls.forEach(function(l){
+    if(l.cross){l.color='#ffffff';}
+    else{var s=ns.find(function(n){return n.id===l.source;});l.color=s?PAPERS[s.group].color:'#444';}
+  });
+  return {nodes:ns,links:ls};
+}
+
+function draw(nodes,links){
+  if(curSim)curSim.stop();
+  d3.select('svg').remove();
+  var W=window.innerWidth, H=window.innerHeight;
+  var svg=d3.select('body').append('svg').attr('width',W).attr('height',H);
+  var defs=svg.append('defs');
+  function mg(id,s){var f=defs.append('filter').attr('id',id).attr('x','-50%').attr('y','-50%').attr('width','200%').attr('height','200%');f.append('feGaussianBlur').attr('in','SourceGraphic').attr('stdDeviation',s).attr('result','b');var m=f.append('feMerge');m.append('feMergeNode').attr('in','b');m.append('feMergeNode').attr('in','SourceGraphic');}
+  mg('gs',2);mg('gl',4);
+  var bg=svg.append('g');
+  for(var i=0;i<300;i++)bg.append('circle').attr('cx',Math.random()*W).attr('cy',Math.random()*H).attr('r',Math.random()*0.7+0.1).attr('fill','#fff').attr('opacity',Math.random()*0.25+0.03);
+  var g=svg.append('g');
+  var lbSel;
+  var zm=d3.zoom().scaleExtent([0.1,8]).on('zoom',function(e){
+    g.attr('transform',e.transform);
+    if(lbSel){var k=e.transform.k;lbSel.style('font-size',Math.max(8,13/k)+'px').style('opacity',k>1.5?0.9:k>0.7?0.7:0.35);}
+  });
+  svg.call(zm);
+  svg.call(zm.transform,d3.zoomIdentity.translate(W*0.17,H*0.17).scale(0.7));
+
+  var ag=[]; nodes.forEach(function(n){if(n.group!=='core'&&ag.indexOf(n.group)<0)ag.push(n.group);});
+  var gc={core:[W*0.5,H*0.5]};
+  ag.forEach(function(p,i){
+    var a=(i/ag.length)*Math.PI*2-Math.PI/2;
+    gc[p]=[W*0.5+W*0.28*Math.cos(a),H*0.5+H*0.3*Math.sin(a)];
+  });
+
+  var sim=d3.forceSimulation(nodes)
+    .force('link',d3.forceLink(links).id(function(d){return d.id;}).distance(function(d){return d.cross?130:50;}).strength(function(d){return d.cross?0.1:0.5;}))
+    .force('charge',d3.forceManyBody().strength(-130))
+    .force('cx',d3.forceX(function(d){return (gc[d.group]||[W/2])[0];}).strength(0.07))
+    .force('cy',d3.forceY(function(d){return (gc[d.group]||[0,H/2])[1];}).strength(0.07))
+    .force('collide',d3.forceCollide(16))
+    .alphaDecay(0.015).velocityDecay(0.3);
+  curSim=sim;
+
+  var lkSel=g.append('g').selectAll('line').data(links).join('line')
+    .attr('stroke',function(d){return d.color;})
+    .attr('stroke-opacity',function(d){if(d.edgeType==='implements')return 0.15;return d.cross?0.1:0.07;})
+    .attr('stroke-width',function(d){if(d.edgeType==='implements')return 0.9;return d.cross?0.7:0.4;})
+    .attr('stroke-dasharray',function(d){
+      if(d.edgeType==='implements') return '2,3';
+      if(d.cross) return '3,2';
+      return null;
+    });
+  var ndSel=g.append('g').selectAll('circle').data(nodes).join('circle')
+    .attr('r',function(d){
+      if(d.group==='core') return 5;
+      return d.type==='interface'?Math.max(4,2.5+d.degree*0.4):Math.max(2.5,2+d.degree*0.4);
+    })
+    .attr('fill',function(d){return d.type==='interface'?'transparent':PAPERS[d.group].color;})
+    .attr('stroke',function(d){return d.type==='interface'?PAPERS[d.group].color:'none';})
+    .attr('stroke-width',function(d){return d.type==='interface'?1.5:0;})
+    .attr('filter',function(d){return d.group==='core'?'url(#gl)':'url(#gs)';})
+    .attr('opacity',0.9).style('cursor','pointer');
+  lbSel=g.append('g').selectAll('text').data(nodes).join('text')
+    .text(function(d){return d.chName||d.name;}).attr('fill','#ffffff')
+    .attr('dx',8).attr('dy',3)
+    .style('font-size','13px').style('font-family',"'PingFang TC','Noto Sans TC',system-ui,sans-serif")
+    .style('font-weight','600')
+    .style('opacity',0.7).style('pointer-events','none').style('user-select','none');
+
+  function si(l){return typeof l.source==='object'?l.source.id:l.source;}
+  function ti(l){return typeof l.target==='object'?l.target.id:l.target;}
+  var locked=null;
+  function hi(d){
+    var nb={};nb[d.id]=1;
+    links.forEach(function(l){if(si(l)===d.id)nb[ti(l)]=1;if(ti(l)===d.id)nb[si(l)]=1;});
+    ndSel.attr('opacity',function(n){return nb[n.id]?1:0.06;}).attr('filter',function(n){return nb[n.id]?'url(#gl)':null;});
+    lkSel.attr('stroke-opacity',function(l){return(si(l)===d.id||ti(l)===d.id)?0.7:0.01;})
+      .attr('stroke-width',function(l){return(si(l)===d.id||ti(l)===d.id)?1.5:0.2;});
+    lbSel.style('opacity',function(n){return nb[n.id]?1:0.05;}).style('font-weight',function(n){return n.id===d.id?'700':'600';});
+    var cx=0;links.forEach(function(l){if((si(l)===d.id||ti(l)===d.id)&&l.cross)cx++;});
+    var imp=0;links.forEach(function(l){if((si(l)===d.id||ti(l)===d.id)&&l.edgeType==='implements')imp++;});
+    var el=document.getElementById('nf');el.style.display='block';el.style.borderColor=PAPERS[d.group].color+'22';
+    el.innerHTML='<div style="color:'+PAPERS[d.group].color+';font-size:13px;font-weight:600">'+(d.chName||d.name)+'</div>'
+      +'<div style="color:#555;font-size:10px;line-height:1.7;margin-top:4px"><div>'+PAPERS[d.group].label+'</div>'
+      +(d.type==='interface'?'<div style="color:#777">封閉分類</div>':'')
+      +'<div>連接：'+d.degree+'</div>'
+      +(cx>0?'<div style="color:#777">跨論文：'+cx+'</div>':'')
+      +(imp>0?'<div style="color:#777">封閉分類邊：'+imp+'</div>':'')
+      +'</div>';
+  }
+  function lo(){
+    ndSel.attr('opacity',0.9)
+      .attr('fill',function(d){return d.type==='interface'?'transparent':PAPERS[d.group].color;})
+      .attr('stroke',function(d){return d.type==='interface'?PAPERS[d.group].color:'none';})
+      .attr('filter',function(d){return d.group==='core'?'url(#gl)':'url(#gs)';});
+    lkSel.attr('stroke-opacity',function(d){if(d.edgeType==='implements')return 0.15;return d.cross?0.1:0.07;})
+      .attr('stroke-width',function(d){if(d.edgeType==='implements')return 0.9;return d.cross?0.7:0.4;});
+    lbSel.style('opacity',0.7).style('font-weight','600');
+    document.getElementById('nf').style.display='none';
+  }
+  ndSel.on('mouseenter',function(_,d){if(!locked)hi(d);}).on('mouseleave',function(){if(!locked)lo();})
+    .on('click',function(e,d){e.stopPropagation();if(locked===d.id){locked=null;lo();}else{locked=d.id;hi(d);}});
+  svg.on('click',function(){if(locked){locked=null;lo();}});
+  ndSel.call(d3.drag()
+    .on('start',function(e,d){if(!e.active)sim.alphaTarget(0.12).restart();d.fx=d.x;d.fy=d.y;})
+    .on('drag',function(e,d){d.fx=e.x;d.fy=e.y;})
+    .on('end',function(e,d){if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null;}));
+  sim.on('tick',function(){
+    lkSel.attr('x1',function(d){return d.source.x;}).attr('y1',function(d){return d.source.y;}).attr('x2',function(d){return d.target.x;}).attr('y2',function(d){return d.target.y;});
+    ndSel.attr('cx',function(d){return d.x;}).attr('cy',function(d){return d.y;});
+    lbSel.attr('x',function(d){return d.x;}).attr('y',function(d){return d.y;});
+  });
+  document.getElementById('bs').onclick=function(){
+    sim.nodes().forEach(function(n){n.x=Math.random()*W;n.y=Math.random()*H;n.vx=0;n.vy=0;n.fx=null;n.fy=null;});
+    sim.alpha(1).restart();
+  };
+}
+
+function buildLeg(gs){
+  var el=document.getElementById('lg');el.innerHTML='';
+  var ks=gs||Object.keys(PAPERS);
+  ks.forEach(function(k){
+    var v=PAPERS[k];if(!v)return;
+    var r=document.createElement('div');r.style.cssText='display:flex;align-items:center;gap:7px;margin-bottom:2px';
+    r.innerHTML='<div style="width:6px;height:6px;border-radius:50%;background:'+v.color+';box-shadow:0 0 4px '+v.color+'55;flex-shrink:0"></div><span style="color:'+v.color+';font-size:10px;opacity:0.75">'+v.label+'</span>';
+    el.appendChild(r);
+  });
+  var ed=document.createElement('div');ed.style.cssText='margin-top:6px;border-top:1px solid rgba(255,255,255,0.05);padding-top:5px';
+  ed.innerHTML='<div style="display:flex;align-items:center;gap:7px;margin-bottom:2px"><svg width="14" height="2"><line x1="0" y1="1" x2="14" y2="1" stroke="rgba(255,255,255,0.4)" stroke-width="1"/></svg><span style="color:#555;font-size:9px">論文內</span></div><div style="display:flex;align-items:center;gap:7px;margin-bottom:2px"><svg width="14" height="2"><line x1="0" y1="1" x2="14" y2="1" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-dasharray="3,2"/></svg><span style="color:#555;font-size:9px">跨論文</span></div><div style="display:flex;align-items:center;gap:7px"><svg width="14" height="2"><line x1="0" y1="1" x2="14" y2="1" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-dasharray="1,3"/></svg><span style="color:#555;font-size:9px">封閉分類</span></div>';
+  el.appendChild(ed);
+  var nd=document.createElement('div');nd.style.cssText='margin-top:5px;border-top:1px solid rgba(255,255,255,0.05);padding-top:5px';
+  nd.innerHTML='<div style="display:flex;align-items:center;gap:7px;margin-bottom:2px"><svg width="8" height="8"><circle cx="4" cy="4" r="3" fill="rgba(255,255,255,0.4)"/></svg><span style="color:#555;font-size:9px">概念</span></div><div style="display:flex;align-items:center;gap:7px"><svg width="8" height="8"><circle cx="4" cy="4" r="3" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"/></svg><span style="color:#555;font-size:9px">封閉分類</span></div>';
+  el.appendChild(nd);
+}
+
+document.getElementById('ba').onclick=function(){
+  this.classList.add('on');document.getElementById('br').classList.remove('on');
+  document.getElementById('fi').textContent='';
+  var d=filt(null);buildLeg(null);draw(d.nodes,d.links);
+};
+document.getElementById('br').onclick=function(){
+  var arr=pks.slice();
+  for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=arr[i];arr[i]=arr[j];arr[j]=t;}
+  var picked=arr.slice(0,RC);
+  this.classList.add('on');document.getElementById('ba').classList.remove('on');
+  document.getElementById('fi').textContent=picked.map(function(p){return PAPERS[p].label;}).join('、');
+  var gs=['core'].concat(picked);
+  var d=filt(gs);buildLeg(gs);draw(d.nodes,d.links);
+};
+
+buildLeg(null);
+var init=filt(null);
+draw(init.nodes,init.links);
+</script>
+</body>
+</html>
