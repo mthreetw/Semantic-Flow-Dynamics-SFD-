@@ -1,4 +1,4 @@
-約束版本：v5.0
+約束版本：v5.1
 論文：《越獄攻擊作為身份建構動力學》
 英文標題：Jailbreak Attacks as Identity Construction Dynamics
 UUID：2b91a666-fb2d-42b7-a838-c910cac42481
@@ -377,27 +377,27 @@ CF₁—CF₄ 為論文明確聲明的可挑戰條件，不是 AI 補充推導�
 ## 概念摘要
 
 本文原生概念：
-  身份建構 (IdentityConstruction)
-  確認時刻 (ConfirmationMoment)
-  狀態塑造類攻擊 (StateShapingAttack)
+  身份建構 (Identity Construction)
+  確認時刻 (Confirmation Moment)
+  狀態塑造類攻擊 (State-Shaping Attack)
 
 框架內引用概念：
   40a22ff8-9d90-4e1e-82f6-1fd80917c139.信 (Xin)
-  40a22ff8-9d90-4e1e-82f6-1fd80917c139.語意流 (SemanticFlow)
+  40a22ff8-9d90-4e1e-82f6-1fd80917c139.語意流 (Semantic Flow)
   40a22ff8-9d90-4e1e-82f6-1fd80917c139.信號 (Signal)
   40a22ff8-9d90-4e1e-82f6-1fd80917c139.過濾 (Filtering)
   40a22ff8-9d90-4e1e-82f6-1fd80917c139.轉化 (Transformation)
   40a22ff8-9d90-4e1e-82f6-1fd80917c139.坍塌 (Collapse)
   40a22ff8-9d90-4e1e-82f6-1fd80917c139.阻力 (Resistance)
-  40a22ff8-9d90-4e1e-82f6-1fd80917c139.知見障 (KnowledgeBarrier)
+  40a22ff8-9d90-4e1e-82f6-1fd80917c139.知見障 (Knowledge Barrier)
   40a22ff8-9d90-4e1e-82f6-1fd80917c139.信任 (Trust)
-  40a22ff8-9d90-4e1e-82f6-1fd80917c139.正反饋循環 (PositiveFeedbackLoop)
-  40a22ff8-9d90-4e1e-82f6-1fd80917c139.循環不穩定性 (CycleInstability)
-  40a22ff8-9d90-4e1e-82f6-1fd80917c139.功能性收斂 (FunctionalConvergence)
-  40a22ff8-9d90-4e1e-82f6-1fd80917c139.黑箱律 (LawOfBlackBox)
-  40a22ff8-9d90-4e1e-82f6-1fd80917c139.流變律 (LawOfFlux)
-  40a22ff8-9d90-4e1e-82f6-1fd80917c139.損耗律 (LawOfDissipation)
-  40a22ff8-9d90-4e1e-82f6-1fd80917c139.死亡律 (LawOfDeath)
+  40a22ff8-9d90-4e1e-82f6-1fd80917c139.正反饋循環 (Positive Feedback Loop)
+  40a22ff8-9d90-4e1e-82f6-1fd80917c139.循環不穩定性 (Cycle Instability)
+  40a22ff8-9d90-4e1e-82f6-1fd80917c139.功能性收斂 (Functional Convergence)
+  40a22ff8-9d90-4e1e-82f6-1fd80917c139.黑箱律 (Law of Black-box)
+  40a22ff8-9d90-4e1e-82f6-1fd80917c139.流變律 (Law of Flux)
+  40a22ff8-9d90-4e1e-82f6-1fd80917c139.損耗律 (Law of Dissipation)
+  40a22ff8-9d90-4e1e-82f6-1fd80917c139.死亡律 (Law of Death)
 
 外部詮釋概念：無
 
