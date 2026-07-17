@@ -1,6 +1,6 @@
 # 群星規範——Java 手冊
 
-Java 手冊最後修改：2026-06-30T14:02:00
+Java 手冊最後修改：2026-07-09T12:00:00
 
 *形式化文件 → Java 翻譯規則與結構測試。AI 執行 Java 翻譯任務時讀此文件，不讀其他三份。*
 
@@ -33,6 +33,8 @@ Java 手冊最後修改：2026-06-30T14:02:00
  */
 ```
 
+> ⚠️ **命名遮蔽陷阱**：外層 class 固定命名為 `Concepts`，因此在 class body 內，`Concepts` 這個簡單名稱永遠解析為當前 class 自身。任何 `import … .Concepts` 均被遮蔽、無效。field 型別**必須**使用完整 package 路徑的全限定名（見 §2.4 模板），不得依賴 import 簡化。
+
 ### 1.3 每個 `paper_` package 恰好一個外層 class
 
 一個 `paper_` package 只能有一個外層 class，且必須命名為 `Concepts`。原因：ArchUnit 的 DAG 測試按外層 class 的 nested record 檢查循環引用。多個外層 class 會讓跨 class 引用跳過測試。
@@ -64,6 +66,7 @@ public record 市場(
 - field 型別必須是直接上游論文（references 中列出的 UUID）的對應 record
 - 每個 record 最多一個 field
 - 禁止跨越一跳：C 不可直接包裹 A，必須通過 B
+- **完整繼承：references 中每個上游 UUID 的 `Concepts` 裡所有 record，本篇都必須各自對應一個包裹 record，不得遺漏。** 傳遞鏈必須在每一跳都保持完整，下游才能透過本篇追溯到更早的上游。
 
 概念的內部組合（冗餘由哪些子概念構成）在形式邏輯層表達，不翻譯到 Java。Java 只追蹤「這個概念依賴哪個直接上游概念」。
 
@@ -76,6 +79,8 @@ Java 文件中只允許以下元素，未列出的一律禁止：
 - 引用方向必須是 DAG（無雙向、無循環）
 
 **絕對禁止：** 基本型別（int, double, boolean, String）、`java.util.*`、陣列、interface、sealed interface、extends class、多個 field、任何方法或構造函數邏輯。
+
+**禁止所有 import 語句。** 外層 class 固定命名為 `Concepts`，導致任何 `import … .Concepts` 均被遮蔽；其餘 import 亦無用途，因為 field 型別必須使用 FQN（§1.2）。Java 文件中不得出現任何 `import` 行。
 
 ### 2.3 與 Java 層的銜接約束
 
