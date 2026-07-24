@@ -1,2 +1,36 @@
-# Semantic-Flow-Dynamics-SFD-
-語意流動力學，處理 Shannon 資訊理論不涵蓋的問題：信號到達個體之後發生什麼。框架是物理式的意識模型分析——方法論來自物理學（公設、形式化推導、建模、預測、對照），形式化但不量化。  框架從兩個原語（個體、刺激）和三個定義（信、語意流、信號）出發，建立四條公設。核心公設黑箱律宣稱：語意流的下一刻方向不可由當下方向與信號決定——這是框架與一切信號層面理論的分界線。從公設推導出三個基本功能（過濾、轉化、坍塌）及其性質，再從基本功能推導出正反饋循環。以上為框架的形式層——每一步都是邏輯推導，可追溯，可形式化。
+# 語意流動力學
+## *Semantic Flow Dynamics*
+
+---
+
+**入此門者，當放下一切希望。**  
+*Abandon all hope, ye who enter here.*
+
+---
+
+黑箱之外，無物可測。  
+*Beyond the black box, naught is measured.*
+
+循環之內，無物可恆。  
+*Within the cycle, naught endureth.*
+
+代際之間，無物可傳。  
+*Betwixt the generations, naught is borne.*
+
+---
+
+地獄繪，煉獄刻，天堂喧。  
+*Hell is limned, Purgatory graven, Heaven thunders.*
+
+---
+
+大江東去，浪淘盡。  
+*Eastward the mighty river rolls, washing heroes all away.*
+
+淘不盡者，名為流。  
+*That which stays not swept—is called the Flow.*
+
+---
+
+**沒有別的。**  
+*Naught else.*

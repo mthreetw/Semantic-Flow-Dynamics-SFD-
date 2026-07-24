@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>語意流動力學 — Semantic Flow Dynamics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;600&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=IBM+Plex+Mono:wght@300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --void: #1a1612;
+    --ash: #2e2822;
+    --smoke: #9a9590;
+    --bone: #e0dbd4;
+    --parchment: #f2efea;
+    --blood: #b33a3a;
+    --blood-dim: rgba(179, 58, 58, 0.3);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--void);
+    color: var(--bone);
+    font-family: 'Noto Serif TC', 'Georgia', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* — meteor canvas — */
+  #meteors {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 8vh 2rem 10vh;
+    text-align: center;
+  }
+
+  /* — gate — */
+  .gate {
+    margin-bottom: 5vh;
+  }
+
+  .gate h1 {
+    font-weight: 600;
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    letter-spacing: 0.15em;
+    color: var(--parchment);
+    margin-bottom: 0.4em;
+  }
+
+  .gate .subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-style: italic;
+    font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+    color: var(--smoke);
+    letter-spacing: 0.08em;
+  }
+
+  /* — epigraph — */
+  .epigraph {
+    margin: 4vh 0;
+    padding: 1.8rem 0;
+    border-top: 1px solid var(--ash);
+    border-bottom: 1px solid var(--ash);
+  }
+
+  .epigraph .zh {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--parchment);
+    line-height: 2;
+  }
+
+  .epigraph .en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 0.95rem;
+    color: var(--smoke);
+    margin-top: 0.6em;
+  }
+
+  /* — axioms — */
+  .axioms {
+    margin: 4vh 0;
+  }
+
+  .axiom {
+    margin-bottom: 1.8rem;
+    opacity: 0;
+    animation: rise 0.8s ease forwards;
+  }
+  .axiom:nth-child(1) { animation-delay: 0.3s; }
+  .axiom:nth-child(2) { animation-delay: 0.6s; }
+  .axiom:nth-child(3) { animation-delay: 0.9s; }
+
+  .axiom .zh {
+    font-weight: 300;
+    font-size: 1.15rem;
+    color: var(--bone);
+    line-height: 1.8;
+  }
+
+  .axiom .en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 0.9rem;
+    color: var(--smoke);
+    margin-top: 0.3em;
+  }
+
+  /* — triptych — */
+  .triptych {
+    margin: 4vh 0;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--ash);
+    border-bottom: 1px solid var(--ash);
+  }
+
+  .triptych .zh {
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.25em;
+    color: var(--blood);
+    line-height: 2;
+  }
+
+  .triptych .en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 0.85rem;
+    color: var(--smoke);
+    margin-top: 0.5em;
+  }
+
+  /* — coda — */
+  .coda {
+    margin: 4vh 0;
+  }
+
+  .coda .stanza {
+    margin-bottom: 1.2rem;
+  }
+
+  .coda .zh {
+    font-weight: 300;
+    font-size: 1.15rem;
+    color: var(--bone);
+    line-height: 1.8;
+  }
+
+  .coda .en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 0.9rem;
+    color: var(--smoke);
+    margin-top: 0.3em;
+  }
+
+  .coda .highlight {
+    color: var(--parchment);
+    font-weight: 600;
+  }
+
+  /* — seal — */
+  .seal {
+    margin-top: 5vh;
+    padding-top: 2rem;
+    border-top: 1px solid var(--ash);
+  }
+
+  .seal .zh {
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: var(--parchment);
+    letter-spacing: 0.1em;
+  }
+
+  .seal .en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 0.95rem;
+    color: var(--smoke);
+    margin-top: 0.4em;
+  }
+
+  /* — footer — */
+  footer {
+    margin-top: 5vh;
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--smoke);
+    opacity: 0.5;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    letter-spacing: 0.05em;
+  }
+
+  /* — brief — */
+  .brief {
+    margin-top: 5vh;
+    text-align: center;
+  }
+
+  .brief p {
+    font-weight: 300;
+    font-size: 0.9rem;
+    color: var(--smoke);
+    line-height: 1.9;
+  }
+
+  /* — enter — */
+  .enter {
+    margin-top: 4vh;
+    text-align: center;
+  }
+
+  .enter a {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 1.4rem;
+    color: var(--smoke);
+    text-decoration: none;
+    letter-spacing: 0.15em;
+    border-bottom: 1px solid var(--ash);
+    padding-bottom: 0.2em;
+    transition: color 0.3s, border-color 0.3s;
+  }
+
+  .enter a:hover {
+    color: var(--parchment);
+    border-color: var(--blood);
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .axiom { opacity: 1; animation: none; }
+  }
+
+  @media (max-width: 480px) {
+    main { padding: 8vh 1.5rem 12vh; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="meteors" aria-hidden="true"></canvas>
+
+<script>
+(function() {
+  const canvas = document.getElementById('meteors');
+  const ctx = canvas.getContext('2d');
+  let w, h, meteors = [];
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function createMeteor() {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 1.5 + Math.random() * 3;
+    const offset = 120 + Math.random() * 300;
+    return {
+      x: w / 2 + Math.cos(angle) * offset,
+      y: h / 2 + Math.sin(angle) * offset,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 0,
+      maxLife: 60 + Math.random() * 80,
+      size: 1 + Math.random() * 1.5,
+      hue: '255, 255, 255'
+    };
+  }
+
+  const maxMotion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function frame() {
+    if (!maxMotion) return;
+    ctx.clearRect(0, 0, w, h);
+
+    if (Math.random() < 0.15) meteors.push(createMeteor());
+
+    for (let i = meteors.length - 1; i >= 0; i--) {
+      const m = meteors[i];
+      m.x += m.vx;
+      m.y += m.vy;
+      m.life++;
+
+      const progress = m.life / m.maxLife;
+      const alpha = progress < 0.1 ? progress * 10 : (1 - progress);
+      const tailLen = 12 + progress * 25;
+
+      ctx.beginPath();
+      ctx.moveTo(m.x, m.y);
+      ctx.lineTo(m.x - m.vx * tailLen, m.y - m.vy * tailLen);
+      ctx.strokeStyle = `rgba(${m.hue}, ${alpha * 0.6})`;
+      ctx.lineWidth = m.size;
+      ctx.stroke();
+
+      if (m.life >= m.maxLife) meteors.splice(i, 1);
+    }
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
+<main>
+
+  <section class="gate">
+    <h1>語意流動力學</h1>
+    <p class="subtitle">Semantic Flow Dynamics</p>
+  </section>
+
+  <section class="brief">
+    <p>從意識出發，探討一切意識現象的可能。</p>
+  </section>
+
+  <section class="epigraph">
+    <p class="zh">入此門者，當放下一切希望。</p>
+    <p class="en">Abandon all hope, ye who enter here.</p>
+  </section>
+
+  <section class="axioms">
+    <div class="axiom">
+      <p class="zh">黑箱之外，無物可測。</p>
+      <p class="en">Beyond the black box, naught is measured.</p>
+    </div>
+    <div class="axiom">
+      <p class="zh">循環之內，無物可恆。</p>
+      <p class="en">Within the cycle, naught endureth.</p>
+    </div>
+    <div class="axiom">
+      <p class="zh">代際之間，無物可傳。</p>
+      <p class="en">Betwixt the generations, naught is borne.</p>
+    </div>
+  </section>
+
+  <section class="triptych">
+    <p class="zh">地獄繪，煉獄刻，天堂喧。</p>
+    <p class="en">Hell is limned, Purgatory graven, Heaven thunders.</p>
+  </section>
+
+  <section class="coda">
+    <div class="stanza">
+      <p class="zh">大江東去，浪淘盡。</p>
+      <p class="en">Eastward the mighty river rolls, washing heroes all away.</p>
+    </div>
+    <div class="stanza">
+      <p class="zh">淘不盡者，名為<span class="highlight">流</span>。</p>
+      <p class="en">That which stays not swept — is called the Flow.</p>
+    </div>
+  </section>
+
+  <section class="seal">
+    <p class="zh">沒有別的。</p>
+    <p class="en">Naught else.</p>
+  </section>
+
+  <nav class="enter">
+    <a href="https://github.com/mthreetw/Semantic-Flow-Dynamics-SFD-">進入 · Enter</a>
+  </nav>
+
+
+
+</main>
+
+</body>
+</html>
