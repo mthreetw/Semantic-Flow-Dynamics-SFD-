@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>群星規範 — 論文手冊驗證器</title>
+<style>
+  :root {
+    --bg: #0e1117; --surface: #161b22; --surface2: #1c2129;
+    --border: #2d333b; --text: #e6edf3; --text2: #8b949e;
+    --pass: #2ea043; --pass-bg: #0d1f0d;
+    --fail: #f85149; --fail-bg: #2d1215;
+    --accent: #58a6ff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6;
+  }
+  .container { max-width: 920px; margin: 0 auto; padding: 40px 24px; }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.3px; }
+  .subtitle { color: var(--text2); font-size: 14px; margin-bottom: 32px; }
+  .drop-zone {
+    border: 2px dashed var(--border); border-radius: 12px; padding: 56px 24px;
+    text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface);
+  }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: #0d1117; }
+  .drop-zone input { display: none; }
+  .drop-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.6; }
+  .drop-text { color: var(--text2); font-size: 14px; }
+  .drop-text strong { color: var(--text); }
+  .file-info {
+    display: flex; align-items: center; gap: 12px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px;
+    margin-bottom: 24px; font-size: 14px;
+  }
+  .file-info .name { font-family: "SF Mono","Fira Code",monospace; color: var(--accent); flex: 1; }
+  .file-info .size { color: var(--text2); }
+  .btn-reset {
+    background: none; border: 1px solid var(--border); color: var(--text2);
+    padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;
+  }
+  .btn-reset:hover { border-color: var(--fail); color: var(--fail); }
+  .summary-bar { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .summary-chip {
+    display: flex; align-items: center; gap: 6px; padding: 6px 14px;
+    border-radius: 20px; font-size: 14px; font-weight: 500;
+  }
+  .summary-chip.pass { background: var(--pass-bg); color: var(--pass); border: 1px solid #1a3a1a; }
+  .summary-chip.fail { background: var(--fail-bg); color: var(--fail); border: 1px solid #3d1519; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.pass { background: var(--pass); }
+  .dot.fail { background: var(--fail); }
+  .section-title {
+    font-size: 15px; font-weight: 600; color: var(--text2);
+    margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
+  }
+  .result-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 8px; display: flex; gap: 12px;
+    align-items: flex-start; font-size: 14px; transition: border-color 0.15s;
+  }
+  .result-card:hover { border-color: #444c56; }
+  .result-card.fail { border-left: 3px solid var(--fail); }
+  .result-card.pass { border-left: 3px solid var(--pass); }
+  .badge {
+    font-family: "SF Mono","Fira Code",monospace; font-size: 12px; padding: 2px 8px;
+    border-radius: 4px; white-space: nowrap; font-weight: 600; flex-shrink: 0;
+    min-width: 54px; text-align: center;
+  }
+  .badge.pass { background: var(--pass-bg); color: var(--pass); }
+  .badge.fail { background: var(--fail-bg); color: var(--fail); }
+  .result-body { flex: 1; min-width: 0; }
+  .result-id { font-family: "SF Mono","Fira Code",monospace; font-size: 13px; color: var(--accent); margin-right: 8px; }
+  .result-desc { color: var(--text); }
+  .result-detail { color: var(--text2); font-size: 13px; margin-top: 4px; word-break: break-all; }
+  .result-detail code {
+    font-family: "SF Mono","Fira Code",monospace; background: var(--surface2);
+    padding: 1px 5px; border-radius: 3px; font-size: 12px; color: #d29922;
+  }
+  .not-checked {
+    margin-top: 32px; padding: 16px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; font-size: 13px; color: var(--text2);
+  }
+  .not-checked h3 { font-size: 14px; color: var(--text); margin-bottom: 8px; font-weight: 600; }
+  .not-checked .tag {
+    display: inline-block; background: var(--surface2); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 4px; margin: 2px 4px 2px 0;
+    font-family: "SF Mono","Fira Code",monospace; font-size: 12px;
+  }
+  @media (max-width: 600px) { .container { padding: 20px 12px; } .drop-zone { padding: 36px 16px; } }
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+<script>
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const TS_RE   = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
+
+// ===== Parsers =====
+
+function parseYamlHeader(text) {
+  // Match --- ... --- YAML front matter
+  const m = text.match(/^---\s*\n([\s\S]*?)\n---/);
+  if (!m) return null;
+  const block = m[1];
+  const h = {};
+  const um = block.match(/uuid\s*:\s*(.+)/);
+  if (um) h.uuid = um[1].trim();
+  const lm = block.match(/last-modified\s*:\s*(.+)/);
+  if (lm) h.lastModified = lm[1].trim();
+  return h;
+}
+
+function parseEndJson(text) {
+  // Find the last ```json ... ``` block
+  const blocks = [];
+  const re = /```json\s*\n([\s\S]*?)\n```/g;
+  let m;
+  while ((m = re.exec(text)) !== null) {
+    blocks.push(m[1]);
+  }
+  if (blocks.length === 0) return null;
+  const last = blocks[blocks.length - 1];
+  try {
+    return JSON.parse(last);
+  } catch (e) {
+    return { _parseError: e.message, _raw: last };
+  }
+}
+
+function findConceptLinks(text) {
+  // Find all [X](Y) patterns in the body (after abstract)
+  // We need to determine where the body starts (after 摘要)
+  const lines = text.split('\n');
+  let bodyStart = 0;
+  let foundAbstract = false;
+  for (let i = 0; i < lines.length; i++) {
+    const L = lines[i].trim();
+    // Look for the first ## heading after any 摘要-related section
+    if (/摘要|abstract/i.test(L)) { foundAbstract = true; continue; }
+    if (foundAbstract && /^##?\s/.test(L)) { bodyStart = i; break; }
+  }
+  // If no abstract found, start after YAML header
+  if (!foundAbstract) {
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].trim() === '---' && i > 0) { bodyStart = i + 1; break; }
+    }
+  }
+
+  const links = [];
+  // Scan body lines for [X](Y) but skip code blocks and JSON blocks
+  let inCode = false;
+  for (let i = bodyStart; i < lines.length; i++) {
+    const L = lines[i];
+    if (L.trim().startsWith('```')) { inCode = !inCode; continue; }
+    if (inCode) continue;
+
+    const re = /\[([^\]]+)\]\(([^)]+)\)/g;
+    let lm;
+    while ((lm = re.exec(L)) !== null) {
+      const display = lm[1];
+      const target = lm[2];
+      // Skip http links
+      if (/^https?:\/\//.test(target)) continue;
+      links.push({ display, target, line: i + 1 });
+    }
+  }
+  return links;
+}
+
+// ===== 單字母變量檢測 =====
+
+function findSingleLetterVars(text) {
+  const issues = [];
+  const lines = text.split('\n');
+  let inCode = false;
+  let inYaml = false;
+  const uuidRe = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
+  for (let i = 0; i < lines.length; i++) {
+    const L = lines[i];
+    const T = L.trim();
+
+    // YAML 頭部
+    if (T === '---' && i === 0) { inYaml = true; continue; }
+    if (T === '---' && inYaml) { inYaml = false; continue; }
+    if (inYaml) continue;
+
+    // code block
+    if (T.startsWith('```')) { inCode = !inCode; continue; }
+    if (inCode) continue;
+
+    // 整行跳過的白名單
+    if (T.startsWith('|')) continue;           // 表格
+    if (T.startsWith('#')) continue;           // 標題
+    if (T.startsWith('---')) continue;         // 分隔線
+    if (uuidRe.test(T)) continue;             // 含 UUID 的行
+    if (T.startsWith('>')) continue;           // 引用範例區塊
+
+    // 掃描孤立單字母（前後都不是字母/數字/下標/中文）
+    const re = /(?<![a-zA-Zα-ωΑ-Ω0-9₀-₉\u4e00-\u9fff])([a-zA-Zα-ωΑ-Ω])(?![a-zA-Zα-ωΑ-Ω0-9₀-₉\u4e00-\u9fff])/g;
+    let m;
+    while ((m = re.exec(T)) !== null) {
+      const ch = m[1];
+      const after = T.substring(m.index + 1, m.index + 5);
+      // 公設/約束編號 P1 C₀ C5 等
+      if (/^[0-9₀-₉]/.test(after)) continue;
+      // ext: 前綴
+      if (ch === 'e' && T.substring(m.index, m.index + 4) === 'ext:') continue;
+      // Markdown 連結語法中的字母不算（已在 [] 或 () 內的上下文）
+      // v4 中的 v
+      if (ch === 'v' && after.startsWith('4')) continue;
+
+      issues.push({ char: ch, line: i + 1, context: T.substring(Math.max(0, m.index - 10), Math.min(T.length, m.index + 11)) });
+    }
+  }
+  return issues;
+}
+
+// ===== Validator =====
+
+function validate(text, filename) {
+  const R = [];
+  const yaml = parseYamlHeader(text);
+  const json = parseEndJson(text);
+  const links = findConceptLinks(text);
+  const badLetters = findSingleLetterVars(text);
+
+  // ========== 文件頭 ==========
+
+  // C4.0a：YAML 頭部存在，含 uuid 和 last-modified
+  const yamlExists = yaml !== null;
+  const hasUuid = yamlExists && !!yaml.uuid;
+  const hasLM   = yamlExists && !!yaml.lastModified;
+  const missingH = [];
+  if (!yamlExists) missingH.push('整個 YAML 頭部');
+  else {
+    if (!hasUuid) missingH.push('uuid');
+    if (!hasLM) missingH.push('last-modified');
+  }
+  R.push({ id:'C4.0a', desc:'論文文件頭存在，包含 uuid 和 last-modified 欄位', cat:'文件頭',
+    ok: missingH.length === 0,
+    detail: missingH.length ? `缺少：${missingH.join('、')}` : null });
+
+  // C4.0b（格式部分）：uuid 為合法 UUID v4 格式
+  if (hasUuid) {
+    const valid = UUID_RE.test(yaml.uuid);
+    R.push({ id:'C4.0b', desc:'uuid 為合法 UUID 格式', cat:'文件頭',
+      ok: valid, detail: valid ? null : `uuid 值不合法：${yaml.uuid}` });
+  }
+
+  // C4.0c：last-modified 時間戳格式
+  if (hasLM) {
+    const valid = TS_RE.test(yaml.lastModified);
+    R.push({ id:'C4.0c', desc:'last-modified 為 YYYY-MM-DDTHH:MM:SS 格式', cat:'文件頭',
+      ok: valid, detail: valid ? null : `格式錯誤：${yaml.lastModified}` });
+  }
+
+  // ========== 概念命名 ==========
+
+  // 論文手冊第一節：禁止單字母變量
+  R.push({ id:'第一節', desc:'禁止單字母變量（公設編號、ext:、v4 等白名單除外）', cat:'概念命名',
+    ok: badLetters.length === 0,
+    detail: badLetters.length
+      ? badLetters.slice(0, 15).map(b => `「${b.char}」行 ${b.line}：…${b.context}…`).join('、')
+        + (badLetters.length > 15 ? `…等共 ${badLetters.length} 處` : '')
+      : null });
+
+  // ========== 文末 JSON ==========
+
+  // C4.1a：JSON 區塊存在且含 references 和 exports
+  const jsonExists = json !== null && !json._parseError;
+  const jsonParseErr = json && json._parseError;
+  const hasRefs = jsonExists && Array.isArray(json.references);
+  const hasExps = jsonExists && Array.isArray(json.exports);
+  const missingJ = [];
+  if (!json) missingJ.push('整個 JSON 區塊');
+  else if (jsonParseErr) missingJ.push(`JSON 解析失敗：${json._parseError}`);
+  else {
+    if (!hasRefs) missingJ.push('references');
+    if (!hasExps) missingJ.push('exports');
+  }
+  R.push({ id:'C4.1a', desc:'論文末尾存在 JSON 區塊，含 references 和 exports', cat:'文末 JSON',
+    ok: missingJ.length === 0,
+    detail: missingJ.length ? `問題：${missingJ.join('、')}` : null });
+
+  // C4.1b：references 中每個值為合法 UUID 或 ext:UUID
+  if (hasRefs) {
+    const badRefs = json.references.filter(r => {
+      const raw = r.replace(/^ext:/, '');
+      return !UUID_RE.test(raw);
+    });
+    R.push({ id:'C4.1b', desc:'references 中每個值為合法 UUID 或 ext:UUID 格式', cat:'文末 JSON',
+      ok: badRefs.length === 0,
+      detail: badRefs.length ? `格式錯誤：${badRefs.join('、')}` : null });
+  }
+
+  // C4.1c：references 不重複
+  if (hasRefs) {
+    const dupes = json.references.filter((r, i) => json.references.indexOf(r) !== i);
+    R.push({ id:'C4.1c', desc:'references 中 UUID 不重複', cat:'文末 JSON',
+      ok: dupes.length === 0,
+      detail: dupes.length ? `重複：${dupes.join('、')}` : null });
+  }
+
+  // C4.1e：exports 不重複
+  if (hasExps) {
+    const dupes = json.exports.filter((e, i) => json.exports.indexOf(e) !== i);
+    R.push({ id:'C4.1e', desc:'exports 中概念名不重複', cat:'文末 JSON',
+      ok: dupes.length === 0,
+      detail: dupes.length ? `重複：${dupes.join('、')}` : null });
+  }
+
+  // ========== 正文標記交叉驗證 ==========
+
+  const exportsSet = hasExps ? new Set(json.exports) : new Set();
+  const refsSet = hasRefs ? new Set(json.references.map(r => r.toLowerCase())) : new Set();
+
+  // Classify links
+  const selfLinks = [];     // [X](X) — 本篇原生
+  const upLinks = [];       // [X](UUID.X) — 框架內上游
+  const extLinks = [];      // [X](ext:UUID.X) — 外部存根
+  const unclassified = [];  // 無法歸類
+
+  for (const lk of links) {
+    const t = lk.target;
+    // [X](X) — display === target
+    if (lk.display === t) {
+      selfLinks.push(lk);
+    }
+    // [X](ext:UUID.Y)
+    else if (/^ext:[0-9a-f]{8}-/i.test(t)) {
+      const m = t.match(/^(ext:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.(.+)$/i);
+      if (m) extLinks.push({ ...lk, uuid: m[1], concept: m[2] });
+      else unclassified.push(lk);
+    }
+    // [X](UUID.Y)
+    else if (/^[0-9a-f]{8}-/i.test(t)) {
+      const m = t.match(/^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.(.+)$/i);
+      if (m) upLinks.push({ ...lk, uuid: m[1], concept: m[2] });
+      else unclassified.push(lk);
+    }
+    else {
+      unclassified.push(lk);
+    }
+  }
+
+  // C4.2a：[X](X) 的 X 必須在 exports 中
+  if (hasExps) {
+    const notInExports = selfLinks.filter(lk => !exportsSet.has(lk.display));
+    R.push({ id:'C4.2a', desc:'[X](X) 本篇概念標記中，X 必須在 exports 中', cat:'正文標記',
+      ok: notInExports.length === 0,
+      detail: notInExports.length
+        ? notInExports.slice(0, 10).map(lk => `「${lk.display}」行 ${lk.line}`).join('、')
+          + (notInExports.length > 10 ? `…等共 ${notInExports.length} 處` : '')
+        : null });
+  }
+
+  // C4.2b：[X](UUID.X) 的 UUID 必須在 references 中
+  if (hasRefs) {
+    const badUp = upLinks.filter(lk => !refsSet.has(lk.uuid.toLowerCase()));
+    R.push({ id:'C4.2b', desc:'[X](UUID.X) 上游標記中，UUID 必須在 references 中', cat:'正文標記',
+      ok: badUp.length === 0,
+      detail: badUp.length
+        ? badUp.slice(0, 10).map(lk => `UUID ${lk.uuid} 不在 references 中（行 ${lk.line}）`).join('、')
+          + (badUp.length > 10 ? `…等共 ${badUp.length} 處` : '')
+        : null });
+  }
+
+  // C4.2c：[X](ext:UUID.X) 的 ext:UUID 必須在 references 中
+  if (hasRefs) {
+    const badExt = extLinks.filter(lk => !refsSet.has(lk.uuid.toLowerCase()));
+    R.push({ id:'C4.2c', desc:'[X](ext:UUID.X) 外部存根標記中，ext:UUID 必須在 references 中', cat:'正文標記',
+      ok: badExt.length === 0,
+      detail: badExt.length
+        ? badExt.slice(0, 10).map(lk => `${lk.uuid} 不在 references 中（行 ${lk.line}）`).join('、')
+          + (badExt.length > 10 ? `…等共 ${badExt.length} 處` : '')
+        : null });
+  }
+
+  // 額外：偵測無法歸類的連結（非 http、非 [X](X)、非 UUID 開頭）
+  if (unclassified.length > 0) {
+    R.push({ id:'格式警告', desc:'偵測到無法歸類的概念連結（非標準格式）', cat:'正文標記',
+      ok: false,
+      detail: unclassified.slice(0, 10).map(lk => `[${lk.display}](${lk.target}) 行 ${lk.line}`).join('、')
+        + (unclassified.length > 10 ? `…等共 ${unclassified.length} 處` : '') });
+  }
+
+  // 統計資訊
+  R.push({ id:'統計', desc:`偵測到 ${selfLinks.length} 個本篇標記、${upLinks.length} 個上游標記、${extLinks.length} 個外部存根標記`, cat:'正文標記',
+    ok: true, detail: null });
+
+  return R;
+}
+
+// ===== 不檢查的約束 =====
+const AI_ONLY = [
+  'C4.0b（資料夾名稱比對）',
+  'C4.1d','C4.1f','C4.1g','C4.1h','C4.1i',
+  'C4.2a（概念是否每次出現都有標記）',
+  'C4.2b（X 是否在上游 exports 中）',
+  'C4.2c（X 是否在外部存根 exports 中）',
+  'C4.2d'
+];
+
+// ===== UI =====
+const app = document.getElementById('app');
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderDrop() {
+  app.innerHTML = `
+    <h1>群星規範 — 論文手冊驗證器</h1>
+    <p class="subtitle">拖放論文 .md 檔案，自動檢查所有純格式約束</p>
+    <div class="drop-zone" id="dz">
+      <div class="drop-icon">📝</div>
+      <p class="drop-text"><strong>拖放檔案到這裡</strong><br>或點擊選取 .md 檔案</p>
+      <input type="file" id="fi" accept=".md,.txt,.markdown">
+    </div>
+    <p style="color:var(--text2);font-size:13px;margin-top:16px;text-align:center;">
+      純格式檢查 — 語義判定、上游比對、完整性檢查交由 AI 審核
+    </p>`;
+  const dz = document.getElementById('dz'), fi = document.getElementById('fi');
+  dz.onclick = () => fi.click();
+  dz.ondragover = e => { e.preventDefault(); dz.classList.add('drag-over'); };
+  dz.ondragleave = () => dz.classList.remove('drag-over');
+  dz.ondrop = e => { e.preventDefault(); dz.classList.remove('drag-over'); if(e.dataTransfer.files.length) load(e.dataTransfer.files[0]); };
+  fi.onchange = e => { if(e.target.files.length) load(e.target.files[0]); };
+}
+
+function load(file) {
+  const r = new FileReader();
+  r.onload = e => renderResults(validate(e.target.result, file.name), file.name, file.size);
+  r.readAsText(file);
+}
+
+function renderResults(results, fname, fsize) {
+  // Separate stats from checks
+  const checks = results.filter(r => r.id !== '統計');
+  const stats = results.filter(r => r.id === '統計');
+  const pass = checks.filter(r => r.ok).length;
+  const fail = checks.filter(r => !r.ok).length;
+
+  let html = `
+    <h1>群星規範 — 論文手冊驗證器</h1>
+    <p class="subtitle">驗證結果</p>
+    <div class="file-info">
+      <span class="name">${esc(fname)}</span>
+      <span class="size">${(fsize/1024).toFixed(1)} KB</span>
+      <button class="btn-reset" id="br">重新選擇</button>
+    </div>
+    <div class="summary-bar">
+      <div class="summary-chip pass"><span class="dot pass"></span> ${pass} 通過</div>
+      <div class="summary-chip fail"><span class="dot fail"></span> ${fail} 不通過</div>
+    </div>`;
+
+  if (fail) {
+    html += `<div class="section-title">❌ 不通過 (${fail})</div>`;
+    for (const r of checks.filter(r => !r.ok)) html += card(r);
+  }
+  if (pass) {
+    html += `<div class="section-title">✅ 通過 (${pass})</div>`;
+    for (const r of checks.filter(r => r.ok)) html += card(r);
+  }
+
+  // Stats
+  for (const s of stats) {
+    html += `<div class="result-card pass" style="border-left-color:var(--accent);margin-top:16px">
+      <span class="badge pass" style="background:transparent;color:var(--accent)">統計</span>
+      <div class="result-body"><span class="result-desc">${esc(s.desc)}</span></div>
+    </div>`;
+  }
+
+  html += `
+    <div class="not-checked">
+      <h3>以下約束為語義或需外部資料，不在本工具檢查範圍，交由 AI 審核：</h3>
+      <div>${AI_ONLY.map(c => '<span class="tag">'+esc(c)+'</span>').join('')}</div>
+    </div>`;
+
+  app.innerHTML = html;
+  document.getElementById('br').onclick = renderDrop;
+}
+
+function card(r) {
+  const st = r.ok ? 'pass' : 'fail';
+  const lb = r.ok ? '通過' : '不通過';
+  return `<div class="result-card ${st}">
+    <span class="badge ${st}">${lb}</span>
+    <div class="result-body">
+      <span class="result-id">${esc(r.id)}</span>
+      <span class="result-desc">${esc(r.desc)}</span>
+      ${r.detail ? '<div class="result-detail">'+esc(r.detail)+'</div>' : ''}
+    </div>
+  </div>`;
+}
+
+renderDrop();
+</script>
+</body>
+</html>

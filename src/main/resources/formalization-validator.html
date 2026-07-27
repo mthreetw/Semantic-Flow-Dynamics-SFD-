@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>群星規範 — 形式化文件驗證器</title>
+<style>
+  :root {
+    --bg: #0e1117;
+    --surface: #161b22;
+    --surface2: #1c2129;
+    --border: #2d333b;
+    --text: #e6edf3;
+    --text2: #8b949e;
+    --pass: #2ea043;
+    --pass-bg: #0d1f0d;
+    --fail: #f85149;
+    --fail-bg: #2d1215;
+    --skip: #6e7681;
+    --skip-bg: #161b22;
+    --accent: #58a6ff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6;
+  }
+  .container { max-width: 920px; margin: 0 auto; padding: 40px 24px; }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; letter-spacing: -0.3px; }
+  .subtitle { color: var(--text2); font-size: 14px; margin-bottom: 32px; }
+  .drop-zone {
+    border: 2px dashed var(--border); border-radius: 12px; padding: 56px 24px;
+    text-align: center; cursor: pointer; transition: all 0.2s; background: var(--surface);
+  }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: #0d1117; }
+  .drop-zone input { display: none; }
+  .drop-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.6; }
+  .drop-text { color: var(--text2); font-size: 14px; }
+  .drop-text strong { color: var(--text); }
+  .file-info {
+    display: flex; align-items: center; gap: 12px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin-bottom: 24px; font-size: 14px;
+  }
+  .file-info .name { font-family: "SF Mono","Fira Code",monospace; color: var(--accent); flex: 1; }
+  .file-info .size { color: var(--text2); }
+  .btn-reset {
+    background: none; border: 1px solid var(--border); color: var(--text2);
+    padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 13px;
+  }
+  .btn-reset:hover { border-color: var(--fail); color: var(--fail); }
+  .summary-bar { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .summary-chip {
+    display: flex; align-items: center; gap: 6px; padding: 6px 14px;
+    border-radius: 20px; font-size: 14px; font-weight: 500;
+  }
+  .summary-chip.pass { background: var(--pass-bg); color: var(--pass); border: 1px solid #1a3a1a; }
+  .summary-chip.fail { background: var(--fail-bg); color: var(--fail); border: 1px solid #3d1519; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.pass { background: var(--pass); }
+  .dot.fail { background: var(--fail); }
+  .section-title {
+    font-size: 15px; font-weight: 600; color: var(--text2);
+    margin: 28px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
+  }
+  .result-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 16px; margin-bottom: 8px; display: flex; gap: 12px;
+    align-items: flex-start; font-size: 14px; transition: border-color 0.15s;
+  }
+  .result-card:hover { border-color: #444c56; }
+  .result-card.fail { border-left: 3px solid var(--fail); }
+  .result-card.pass { border-left: 3px solid var(--pass); }
+  .badge {
+    font-family: "SF Mono","Fira Code",monospace; font-size: 12px; padding: 2px 8px;
+    border-radius: 4px; white-space: nowrap; font-weight: 600; flex-shrink: 0;
+    min-width: 54px; text-align: center;
+  }
+  .badge.pass { background: var(--pass-bg); color: var(--pass); }
+  .badge.fail { background: var(--fail-bg); color: var(--fail); }
+  .result-body { flex: 1; min-width: 0; }
+  .result-id { font-family: "SF Mono","Fira Code",monospace; font-size: 13px; color: var(--accent); margin-right: 8px; }
+  .result-desc { color: var(--text); }
+  .result-detail { color: var(--text2); font-size: 13px; margin-top: 4px; word-break: break-all; }
+  .result-detail code {
+    font-family: "SF Mono","Fira Code",monospace; background: var(--surface2);
+    padding: 1px 5px; border-radius: 3px; font-size: 12px; color: #d29922;
+  }
+  .not-checked {
+    margin-top: 32px; padding: 16px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; font-size: 13px; color: var(--text2);
+  }
+  .not-checked h3 { font-size: 14px; color: var(--text); margin-bottom: 8px; font-weight: 600; }
+  .not-checked .tag {
+    display: inline-block; background: var(--surface2); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 4px; margin: 2px 4px 2px 0; font-family: "SF Mono","Fira Code",monospace; font-size: 12px;
+  }
+  @media (max-width: 600px) { .container { padding: 20px 12px; } .drop-zone { padding: 36px 16px; } }
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+<script>
+// ===== 符號表：所有允許的特殊符號 =====
+const ALLOWED_SYMBOLS = new Set([
+  '∧','∨','⊕','¬','→','↔','⇒','⇔','∀','∃','∄','∈','∉',
+  '⊂','⊃','⊆','⊇','∪','∩','≡','≠','≈','∅','≥','≤','≫','≪',
+  '≺','≻','≼','≽','∼','≅','⊥','⊤','□','◇','∝','·','×','±','∞',
+  'Δ','∑','∏','√','⊢','⊬','⊨','⊭','↦','∘','∥','∣','⫫','↝',
+  '∂','∇','∫','⊗'
+]);
+
+// ===== Parser — 最終修正版（強化「無」的辨識） =====
+function parseHeader(text) {
+  const h = {};
+  const lines = text.split('\n');
+  let i = 0;
+  while (i < lines.length) {
+    const L = lines[i].trim();
+    let match;
+
+    if ((match = L.match(/^形式化時間戳[：:]\s*(.+)/))) {
+      h.formTS = match[1].trim();
+    } else if ((match = L.match(/^形式化手冊時間戳[：:]\s*(.+)/))) {
+      h.manualTS = match[1].trim();
+    } else if ((match = L.match(/^論文[：:]\s*(.+)/))) {
+      h.paper = match[1].trim();
+    } else if ((match = L.match(/^英文標題[：:]\s*(.+)/))) {
+      h.engTitle = match[1].trim();
+    } else if ((match = L.match(/^UUID[：:]\s*(.+)/))) {
+      h.uuid = match[1].trim();
+    } else if (L.match(/^引用[：:]/)) {
+      // 強化版：支援 - 無、* 無、1. 無 等格式
+      h.refs = [];
+      let j = i + 1;
+      while (j < lines.length) {
+        const r = lines[j].trim();
+        if (r === '' || r.startsWith('#') || r.startsWith('---')) {
+          j++;
+          continue;
+        }
+        // 去除常見列表符號後判斷是否為「無」
+        const cleanNone = r.replace(/^[\s\-*\d.、]+/, '').trim();
+        if (r === '無' || cleanNone === '無') {
+          h.refs = [];
+          break;
+        }
+        if (r.match(/^(ext:)?[0-9a-f]{8}-/i)) {
+          h.refs.push(r);
+        } else {
+          break;
+        }
+        j++;
+      }
+    }
+    i++;
+  }
+  return h;
+}
+
+function parseSections(text) {
+  const secs = []; let cur = null;
+  for (const line of text.split('\n')) {
+    if (line.match(/^## /)) {
+      if (cur) secs.push(cur);
+      cur = { title: line.replace(/^## /, '').trim(), lines: [], source: null };
+    } else if (cur) {
+      cur.lines.push(line);
+      const m = line.match(/^來源[：:]\s*(.+)/);
+      if (m) cur.source = m[1].trim();
+    }
+  }
+  if (cur) secs.push(cur);
+  return secs;
+}
+
+function getConceptSummary(text) {
+  const m = text.match(/## 概念摘要([\s\S]*?)(?=\n## |$)/);
+  if (!m) return null;
+  const concepts = [];
+  for (const line of m[1].split('\n')) {
+    const t = line.trim();
+    if (!t || t.startsWith('本篇概念') || t.startsWith('---')) continue;
+    const cm = t.match(/^(.+?)\s*\((.+?)\)\s*$/);
+    concepts.push(cm
+      ? { cn: cm[1].trim(), en: cm[2].trim(), hasEn: true }
+      : { cn: t, en: null, hasEn: false }
+    );
+  }
+  return concepts;
+}
+
+// ===== 強化版：正確判斷「無」（支援 - 無、* 無、1. 無、全形空格等） =====
+function getPendingItems(text) {
+  const m = text.match(/## 待決項([\s\S]*?)(?=\n## |$)/);
+  if (!m) return null;
+  let body = m[1].trim();
+  if (body === '') return [];
+
+  // 提取所有中文字元（包含繁簡體）與英數字，過濾掉標點與空白
+  const chars = body.match(/[\u4e00-\u9fa5a-zA-Z0-9]/g);
+  if (!chars) return [];
+
+  const cleaned = chars.join('');
+  // 如果核心語意只剩「無」，視為無待決項
+  if (cleaned === '無') return [];
+
+  // 若有其他文字，逐行過濾掉單純的「無」行（含列表符號）
+  const lines = body.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const result = [];
+  for (const line of lines) {
+    const cleanLine = line.replace(/^[\s\-*\d.、]+/, '').trim();
+    if (cleanLine === '無' || cleanLine === '') continue;
+    result.push(line);
+  }
+  return result;
+}
+
+function getUpstreamUUIDs(text) {
+  const found = [];
+  const lines = text.split('\n');
+  let inHeader = true;
+  for (let i = 0; i < lines.length; i++) {
+    const L = lines[i].trim();
+    if (L.startsWith('---') && inHeader) { inHeader = false; continue; }
+    if (inHeader) continue;
+    if (L.startsWith('|')) continue;
+    const re = /((?:ext:)?[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\./gi;
+    let match;
+    while ((match = re.exec(L)) !== null) {
+      found.push({ uuid: match[1], line: i + 1 });
+    }
+  }
+  return found;
+}
+
+function findSingleLetterVars(text) {
+  const issues = [];
+  const lines = text.split('\n');
+  let inCode = false;
+  let inSummary = false;
+  const uuidRe = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
+  for (let i = 0; i < lines.length; i++) {
+    const L = lines[i];
+    const T = L.trim();
+
+    if (T.startsWith('```')) { inCode = !inCode; continue; }
+    if (inCode) continue;
+    if (T.startsWith('|')) continue;
+    if (T.startsWith('#')) continue;
+    if (T.startsWith('---')) continue;
+    if (/^英文標題[：:]/.test(T)) continue;
+    if (/^(形式化|論文|UUID|引用|來源)/.test(T)) continue;
+    if (uuidRe.test(T)) continue;
+    if (/## 概念摘要/.test(T)) { inSummary = true; continue; }
+    if (/^## /.test(T)) { inSummary = false; continue; }
+    if (inSummary) continue;
+
+    const re = /(?<![a-zA-Zα-ωΑ-Ω0-9₀-₉\u4e00-\u9fff])([a-zA-Zα-ωΑ-Ω])(?![a-zA-Zα-ωΑ-Ω0-9₀-₉\u4e00-\u9fff])/g;
+    let m;
+    while ((m = re.exec(T)) !== null) {
+      const ch = m[1];
+      const after = T.substring(m.index + 1, m.index + 5);
+      if (/^[0-9₀-₉]/.test(after)) continue;
+      if (ch === 'e' && T.substring(m.index, m.index + 4) === 'ext:') continue;
+      if ((ch === 'd' || ch === 't') && T.includes('∫')) continue;
+      if ((ch === 'f' || ch === 'g') && T.includes('∘')) continue;
+      issues.push({ char: ch, line: i + 1, context: T.substring(Math.max(0, m.index - 10), Math.min(T.length, m.index + 11)) });
+    }
+  }
+  return issues;
+}
+
+function findUnknownSymbols(text) {
+  const issues = [];
+  const lines = text.split('\n');
+  let inCode = false;
+  for (let i = 0; i < lines.length; i++) {
+    const L = lines[i];
+    if (L.trim().startsWith('```')) { inCode = !inCode; continue; }
+    if (inCode || L.startsWith('|') || L.startsWith('#') || L.startsWith('---')) continue;
+    if (/^(形式化|論文|英文|UUID|引用|來源)/.test(L.trim())) continue;
+    for (let j = 0; j < L.length; j++) {
+      const cp = L.codePointAt(j);
+      if (cp > 0xFFFF) { j++; continue; }
+      const ch = L[j];
+      if ((cp >= 0x2190 && cp <= 0x21FF) ||
+          (cp >= 0x2200 && cp <= 0x22FF) ||
+          (cp >= 0x27C0 && cp <= 0x27EF) ||
+          (cp >= 0x2980 && cp <= 0x29FF) ||
+          (cp >= 0x2A00 && cp <= 0x2AFF)) {
+        if (ch === '⊥' && j + 1 < L.length && L[j + 1] === '⊥') { j++; continue; }
+        if (ch === '⊥' && j > 0 && L[j - 1] === '⊥') continue;
+        if (!ALLOWED_SYMBOLS.has(ch)) {
+          issues.push({
+            char: ch,
+            code: 'U+' + cp.toString(16).toUpperCase().padStart(4, '0'),
+            line: i + 1
+          });
+        }
+      }
+    }
+  }
+  return issues;
+}
+
+// ===== Validator =====
+function validate(text, filename) {
+  const R = [];
+  const h = parseHeader(text);
+  const secs = parseSections(text);
+  const summary = getConceptSummary(text);
+  const pending = getPendingItems(text);
+  const upRefs = getUpstreamUUIDs(text);
+  const badSymbols = findUnknownSymbols(text);
+  const badLetters = findSingleLetterVars(text);
+
+  // --- 文件頭 ---
+
+  const missing = [];
+  if (!h.formTS) missing.push('形式化時間戳');
+  if (!h.manualTS) missing.push('形式化手冊時間戳');
+  if (!h.paper) missing.push('論文');
+  if (!h.engTitle) missing.push('英文標題');
+  if (!h.uuid) missing.push('UUID');
+  if (h.refs === undefined) missing.push('引用');
+  R.push({ id:'C5.1a', desc:'文件頭所有必填欄位全部存在', cat:'文件頭',
+    ok: missing.length===0, detail: missing.length ? `缺少：${missing.join('、')}` : null });
+
+  if (h.refs) {
+    const dupes = h.refs.filter((r,i) => h.refs.indexOf(r) !== i);
+    R.push({ id:'C5.1d', desc:'引用列表中 UUID 不重複', cat:'文件頭',
+      ok: dupes.length===0, detail: dupes.length ? `重複：${dupes.join('、')}` : null });
+  }
+
+  const tsRe = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/;
+  const tsErr = [];
+  if (h.formTS && !tsRe.test(h.formTS)) tsErr.push(`形式化時間戳格式錯誤：${h.formTS}`);
+  if (h.manualTS && !tsRe.test(h.manualTS)) tsErr.push(`形式化手冊時間戳格式錯誤：${h.manualTS}`);
+  R.push({ id:'C5.1g', desc:'時間戳格式為 YYYY-MM-DDTHH:MM:SS', cat:'文件頭',
+    ok: tsErr.length===0 && !!h.formTS && !!h.manualTS,
+    detail: tsErr.length ? tsErr.join('；') : (!h.formTS||!h.manualTS ? '時間戳欄位缺失（見 C5.1a）' : null) });
+
+  R.push({ id:'C5.1h', desc:'檔名必須為 formalization.md', cat:'文件頭',
+    ok: filename==='formalization.md', detail: filename!=='formalization.md' ? `實際檔名：${filename}` : null });
+
+  // --- 段落結構 ---
+
+  const contentSecs = secs.filter(s =>
+    !['概念摘要','待決項'].includes(s.title) &&
+    !/^上游概念/.test(s.title) &&
+    s.lines.some(l => l.trim().length > 0)
+  );
+  const noSrc = contentSecs.filter(s => !s.source);
+  R.push({ id:'C5.2a', desc:'每個內容段落有標題和來源標註', cat:'段落結構',
+    ok: noSrc.length===0,
+    detail: noSrc.length ? `缺少「來源：」的段落：${noSrc.map(s=>'「'+s.title+'」').join('、')}` : null });
+
+  // --- 上游引用 ---
+
+  if (h.refs) {
+    const refSet = new Set(h.refs.map(r => r.toLowerCase()));
+    const orphan = upRefs.filter(u => !refSet.has(u.uuid.toLowerCase()));
+    R.push({ id:'C5.3b', desc:'文中出現的上游 UUID 必須在文件頭引用列表中', cat:'上游引用',
+      ok: orphan.length===0,
+      detail: orphan.length ? orphan.map(o => `${o.uuid}（行 ${o.line}）`).join('、') : null });
+  }
+
+  // --- 符號約束 ---
+
+  R.push({ id:'C5.5a', desc:'只使用符號表中列出的特殊符號', cat:'符號約束',
+    ok: badSymbols.length===0,
+    detail: badSymbols.length ? badSymbols.map(s => `${s.char} (${s.code}, 行 ${s.line})`).join('、') : null });
+
+  // --- 概念約束 ---
+
+  R.push({ id:'C5.4c', desc:'禁止單字母變量（公設編號、ext:、∫dt、f∘g 等白名單除外）', cat:'概念約束',
+    ok: badLetters.length===0,
+    detail: badLetters.length ? badLetters.map(b => `「${b.char}」行 ${b.line}：…${b.context}…`).join('、') : null });
+
+  // --- 文件結尾 ---
+
+  R.push({ id:'C5.9a', desc:'存在「概念摘要」區塊', cat:'文件結尾',
+    ok: summary!==null, detail: summary===null ? '未找到「## 概念摘要」' : null });
+
+  R.push({ id:'C5.9c', desc:'存在「待決項」區塊', cat:'文件結尾',
+    ok: pending!==null, detail: pending===null ? '未找到「## 待決項」' : null });
+
+  if (summary) {
+    const noEn = summary.filter(c => !c.hasEn);
+    R.push({ id:'C5.9d', desc:'概念摘要中每個概念有英文翻譯（括號內）', cat:'文件結尾',
+      ok: noEn.length===0,
+      detail: noEn.length ? `缺少英文翻譯：${noEn.map(c=>c.cn).join('、')}` : null });
+  }
+
+  if (pending !== null) {
+    R.push({ id:'C8d', desc:'待決項非空時，不得進入審核', cat:'待決項',
+      ok: pending.length===0,
+      detail: pending.length ? `有 ${pending.length} 項待決項未解決` : null });
+  }
+
+  return R;
+}
+
+// ===== 不檢查的約束（交給 AI 審核） =====
+const AI_ONLY = [
+  'C5.1b','C5.1c','C5.2b','C5.2c',
+  'C5.3a','C5.3c','C5.3d',
+  'C5.4a','C5.4b','C5.4d','C5.4f',
+  'C5.5b','C5.5c','C5.5d','C5.5e','C5.5f','C5.5g','C5.5h',
+  'C5.6a','C5.6b','C5.6c','C5.6d','C5.6e','C5.6f','C5.6g',
+  'C5.7a','C5.7b','C5.7c','C5.7d','C5.7e','C5.7f','C5.7g','C5.7h',
+  'C5.8a','C5.8b','C5.8c','C5.8d','C5.8e',
+  'C5.9b',
+  'C8a','C8e','C8f','C8g'
+];
+
+// ===== UI =====
+const app = document.getElementById('app');
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderDrop() {
+  app.innerHTML = `
+    <h1>群星規範 — 形式化文件驗證器</h1>
+    <p class="subtitle">拖放 formalization.md，自動檢查所有純格式約束</p>
+    <div class="drop-zone" id="dz">
+      <div class="drop-icon">📄</div>
+      <p class="drop-text"><strong>拖放檔案到這裡</strong><br>或點擊選取 .md 檔案</p>
+      <input type="file" id="fi" accept=".md,.txt,.markdown">
+    </div>
+    <p style="color:var(--text2);font-size:13px;margin-top:16px;text-align:center;">
+      純格式檢查 — 語義判定與論文交叉比對交由 AI 審核
+    </p>`;
+  const dz = document.getElementById('dz'), fi = document.getElementById('fi');
+  dz.onclick = () => fi.click();
+  dz.ondragover = e => { e.preventDefault(); dz.classList.add('drag-over'); };
+  dz.ondragleave = () => dz.classList.remove('drag-over');
+  dz.ondrop = e => { e.preventDefault(); dz.classList.remove('drag-over'); if(e.dataTransfer.files.length) load(e.dataTransfer.files[0]); };
+  fi.onchange = e => { if(e.target.files.length) load(e.target.files[0]); };
+}
+
+function load(file) {
+  const r = new FileReader();
+  r.onload = e => renderResults(validate(e.target.result, file.name), file.name, file.size);
+  r.readAsText(file);
+}
+
+function renderResults(results, fname, fsize) {
+  const pass = results.filter(r=>r.ok).length;
+  const fail = results.filter(r=>!r.ok).length;
+
+  let html = `
+    <h1>群星規範 — 形式化文件驗證器</h1>
+    <p class="subtitle">驗證結果</p>
+    <div class="file-info">
+      <span class="name">${esc(fname)}</span>
+      <span class="size">${(fsize/1024).toFixed(1)} KB</span>
+      <button class="btn-reset" id="br">重新選擇</button>
+    </div>
+    <div class="summary-bar">
+      <div class="summary-chip pass"><span class="dot pass"></span> ${pass} 通過</div>
+      <div class="summary-chip fail"><span class="dot fail"></span> ${fail} 不通過</div>
+    </div>`;
+
+  if (fail) {
+    html += `<div class="section-title">❌ 不通過 (${fail})</div>`;
+    for (const r of results.filter(r=>!r.ok)) html += card(r);
+  }
+  if (pass) {
+    html += `<div class="section-title">✅ 通過 (${pass})</div>`;
+    for (const r of results.filter(r=>r.ok)) html += card(r);
+  }
+
+  html += `
+    <div class="not-checked">
+      <h3>以下約束為語義或需論文交叉比對，不在本工具檢查範圍，交由 AI 審核：</h3>
+      <div>${AI_ONLY.map(c=>'<span class="tag">'+c+'</span>').join('')}</div>
+    </div>`;
+
+  app.innerHTML = html;
+  document.getElementById('br').onclick = renderDrop;
+}
+
+function card(r) {
+  const st = r.ok ? 'pass' : 'fail';
+  const lb = r.ok ? '通過' : '不通過';
+  return `<div class="result-card ${st}">
+    <span class="badge ${st}">${lb}</span>
+    <div class="result-body">
+      <span class="result-id">${r.id}</span>
+      <span class="result-desc">${esc(r.desc)}</span>
+      ${r.detail ? '<div class="result-detail">'+esc(r.detail)+'</div>' : ''}
+    </div>
+  </div>`;
+}
+
+renderDrop();
+</script>
+</body>
+</html>
