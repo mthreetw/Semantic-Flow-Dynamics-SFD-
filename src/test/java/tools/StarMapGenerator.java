@@ -217,14 +217,6 @@ public class StarMapGenerator {
 
     /**
      * 從一行形式化表達式中提取所有可辨識的概念節點 ID。
-     *
-     * <p>提取順序與優先級：
-     * <ol>
-     *   <li>上游引用 {@code (ext:)UUID.概念名} → 解析為目標 pkg。
-     *   <li>本篇前綴 {@code 本篇.概念名} → 當前 pkg。
-     *   <li>裸漢字序列 → 與本篇白名單比對（防止將描述性文字誤判為概念）。
-     * </ol>
-     * 每步匹配後從殘餘字串中移除，防止重複解析。
      */
     private static List<String> extractConceptIds(
             String line, String currentPkg,
@@ -232,7 +224,6 @@ public class StarMapGenerator {
 
         Set<String> ids = new LinkedHashSet<>();
 
-        // Step 1: 上游 (ext:)UUID.概念名
         Matcher um = RE_UPSTREAM.matcher(line);
         while (um.find()) {
             String tPkg = uuidToPkg.get(um.group(1).toLowerCase());
@@ -240,7 +231,6 @@ public class StarMapGenerator {
         }
         String s1 = RE_UPSTREAM.matcher(line).replaceAll(" ");
 
-        // Step 2: 本篇.概念名
         Matcher lm = RE_LOCAL_PREFIX.matcher(s1);
         while (lm.find()) {
             String c = lm.group(1);
@@ -248,7 +238,6 @@ public class StarMapGenerator {
         }
         String s2 = RE_LOCAL_PREFIX.matcher(s1).replaceAll(" ");
 
-        // Step 3: 裸漢字序列 → 白名單過濾
         Matcher cm = RE_CHINESE.matcher(s2);
         while (cm.find()) {
             String c = cm.group();
@@ -258,12 +247,10 @@ public class StarMapGenerator {
         return new ArrayList<>(ids);
     }
 
-    /** 最小化 JSON 字串轉義。 */
     private static String esc(String s) {
         return s.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
-    /** HSL → #rrggbb */
     private static String hslToHex(int h, int s, int l) {
         float hf = h / 360f, sf = s / 100f, lf = l / 100f;
         float c = (1 - Math.abs(2 * lf - 1)) * sf;
@@ -288,7 +275,7 @@ public class StarMapGenerator {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>概念星圖</title>
+<title>概念星圖 (動態洗牌版)</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -313,11 +300,11 @@ svg{display:block}
 </style>
 </head>
 <body>
-<div id="tt" class="p"><span>語意流動力學</span><span>概念星圖</span></div>
+<div id="tt" class="p"><span>語意流動力學</span><span>概念星圖 (動態洗牌版)</span></div>
 <div id="ct" class="p">
-  <button id="ba" class="on">全部</button>
-  <button id="br">隨機 3 篇</button>
-  <button id="bs">↻ 打亂</button>
+  <button id="ba" class="on">全部論文</button>
+  <button id="br">🎲 隨機抽 3 篇</button>
+  <button id="bs">✨ 原地打亂重排</button>
 </div>
 <div id="fi" class="p"></div>
 <div id="lg" class="p"></div>
@@ -331,9 +318,10 @@ var ALL_L  = /*EDGES_DATA*/;
 var pks = Object.keys(PAPERS);
 var RC  = Math.min(3, pks.length);
 if(pks.length <= RC) document.getElementById('br').style.display = 'none';
-else document.getElementById('br').textContent = '隨機 ' + RC + ' 篇';
+else document.getElementById('br').textContent = '🎲 隨機抽 ' + RC + ' 篇';
 
 var curSim = null;
+var curSel = null; // 狀態記憶
 
 function filt(sel){
   var ns = JSON.parse(JSON.stringify(ALL_N));
@@ -362,9 +350,10 @@ function filt(sel){
   return {nodes: ns, links: ls};
 }
 
-function draw(nodes, links){
+function draw(nodes, links, isShuffle){
   if(curSim) curSim.stop();
-  d3.select('svg').remove();
+  d3.selectAll('svg').remove(); // 絕對清空所有 SVG
+  
   var W = window.innerWidth, H = window.innerHeight;
   var svg = d3.select('body').append('svg').attr('width', W).attr('height', H);
   var defs = svg.append('defs');
@@ -400,9 +389,20 @@ function draw(nodes, links){
   svg.call(zm);
   svg.call(zm.transform, d3.zoomIdentity.translate(W * 0.17, H * 0.17).scale(0.7));
 
-  // 所有論文排成一圈作為重心錨點
   var ag = [];
   nodes.forEach(function(n){if(ag.indexOf(n.group) < 0) ag.push(n.group);});
+  
+  if(isShuffle){
+    for(var i = ag.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = ag[i]; ag[i] = ag[j]; ag[j] = t;
+    }
+    nodes.forEach(function(n){
+      n.x = Math.random() * W;
+      n.y = Math.random() * H;
+    });
+  }
+
   var gc = {};
   ag.forEach(function(p, i){
     var a = (i / ag.length) * Math.PI * 2 - Math.PI / 2;
@@ -503,14 +503,6 @@ function draw(nodes, links){
     ndSel.attr('cx', function(d){return d.x;}).attr('cy', function(d){return d.y;});
     lbSel.attr('x',  function(d){return d.x;}).attr('y',  function(d){return d.y;});
   });
-
-  document.getElementById('bs').onclick = function(){
-    sim.nodes().forEach(function(n){
-      n.x = Math.random() * W; n.y = Math.random() * H;
-      n.vx = 0; n.vy = 0; n.fx = null; n.fy = null;
-    });
-    sim.alpha(1).restart();
-  };
 }
 
 function buildLeg(gs){
@@ -541,7 +533,10 @@ function buildLeg(gs){
 document.getElementById('ba').onclick = function(){
   this.classList.add('on'); document.getElementById('br').classList.remove('on');
   document.getElementById('fi').textContent = '';
-  var d = filt(null); buildLeg(null); draw(d.nodes, d.links);
+  curSel = null;
+  var d = filt(curSel); buildLeg(curSel); 
+  console.log("📍 [全部論文] 節點總數: ", d.nodes.length);
+  draw(d.nodes, d.links, false); 
 };
 document.getElementById('br').onclick = function(){
   var arr = pks.slice();
@@ -552,12 +547,21 @@ document.getElementById('br').onclick = function(){
   var picked = arr.slice(0, RC);
   this.classList.add('on'); document.getElementById('ba').classList.remove('on');
   document.getElementById('fi').textContent = picked.map(function(p){return PAPERS[p].label;}).join('、');
-  var d = filt(picked); buildLeg(picked); draw(d.nodes, d.links);
+  curSel = picked;
+  var d = filt(curSel); buildLeg(curSel); 
+  console.log("🎲 [隨機抽 3 篇] 選中論文 ID: ", picked);
+  console.log("🎲 [隨機抽 3 篇] 提取節點數: ", d.nodes.length);
+  draw(d.nodes, d.links, true); 
+};
+document.getElementById('bs').onclick = function(){
+  var d = filt(curSel);
+  console.log("✨ [原地打亂] 重新分配方位...");
+  draw(d.nodes, d.links, true);
 };
 
 buildLeg(null);
 var init = filt(null);
-draw(init.nodes, init.links);
+draw(init.nodes, init.links, false); 
 </script>
 </body>
 </html>

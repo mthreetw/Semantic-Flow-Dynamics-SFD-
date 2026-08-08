@@ -1,36 +1,38 @@
-package paper_0313a7ea_41cf_415f_b6f2_583840307a37;
+package paper_e5f6a7b8_c9d0_4e1f_a2b3_c4d5e6f7a8b9;
 
 /**
- * 《SFD-Defense:語意流動力學防禦框架的工程驗證》
- * SFD-Defense: Engineering Validation of the Semantic Flow Dynamics Defense Framework
- * UUID: 0313a7ea-41cf-415f-b6f2-583840307a37
+ * 《蓄壓模型：中央集權文明的動力學》
+ * Pressure Accumulation Model: Dynamics of Centralized Civilizations
+ * UUID: e5f6a7b8-c9d0-4e1f-a2b3-c4d5e6f7a8b9
  */
 public class Concepts {
 
-    // 本篇原生概念（空 record）
-    public record 信號層攻擊() {}
-    public record 操縱痕跡() {}
-    public record 信實例化() {}
-    public record 漂移() {}
-    public record 初始知見障() {}
-    public record 知見障稀釋() {}
-    public record 基準距離() {}
-    public record 危險語意區() {}
-    public record 安全距離() {}
-    public record 兩距離法則() {}
-    public record 合規標注() {}
-    public record 語意潛跡現象() {}
-    public record 斷路器式模式() {}
-    public record 語意流動力學防禦框架() {}
-    public record 戒() {}
-    public record 定() {}
-    public record 累積端中斷() {}
-    public record 師() {}
-    public record 確認端中斷() {}
-    public record 慧() {}
+    // === 本篇原生概念（空 record） ===
+    public record 中央集權循環() {}
+    public record 資源集中() {}
+    public record 地方代理人需求() {}
+    public record 蓄壓模型() {}
+    public record 蓄壓() {}
+    public record 底層壓力線() {}
+    public record 代理人壓力線() {}
+    public record 容器耗竭() {}
+    public record 鋸() {}
+    public record 斷裂() {}
+    public record 混戰() {}
+    public record 重建() {}
+    public record 至高王權() {}
+    public record 免疫反應() {}
+    public record 蓄壓期免疫() {}
+    public record 重建瞬間免疫() {}
+    public record 分支條件() {}
+    public record 獨立執行機構() {}
+    public record 免疫失敗條件() {}
+    public record 循環改造能力() {}
+    public record 再生產功能() {}
+    public record 分布式免疫功能() {}
+    public record 馴服() {}
 
-    // 包裹上游概念（單一 field）
-    // 來源：paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139
+    // === 包裹母論文概念（完整繼承 paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139） ===
     public record 個體(paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.個體 上游) {}
     public record 刺激(paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.刺激 上游) {}
     public record 信(paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.信 上游) {}
@@ -74,8 +76,32 @@ public class Concepts {
     public record 損耗律(paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.損耗律 上游) {}
     public record 死亡律(paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.死亡律 上游) {}
 
-    // 來源：paper_2b91a666_fb2d_42b7_a838_c910cac42481
-    public record 身份建構(paper_2b91a666_fb2d_42b7_a838_c910cac42481.Concepts.身份建構 上游) {}
-    public record 確認時刻(paper_2b91a666_fb2d_42b7_a838_c910cac42481.Concepts.確認時刻 上游) {}
-    public record 狀態塑造類攻擊(paper_2b91a666_fb2d_42b7_a838_c910cac42481.Concepts.狀態塑造類攻擊 上游) {}
+    // === 包裹父論文概念（完整繼承 paper_f47ac10b_58cc_4372_a567_0e02b2c3d479） ===
+    public record 信模(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.信模 上游) {}
+    public record 核心信的判準(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.核心信的判準 上游) {}
+    public record 認同構成(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.認同構成 上游) {}
+    public record 死亡判準(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.死亡判準 上游) {}
+    public record 英雄(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.英雄 上游) {}
+    public record 衣服(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.衣服 上游) {}
+    public record 功能性死亡(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.功能性死亡 上游) {}
+    public record 消音(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.消音 上游) {}
+    public record 核心信(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.核心信 上游) {}
+    public record 動力機制(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.動力機制 上游) {}
+    public record 再生產機制(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.再生產機制 上游) {}
+    // 父論文「蓄壓模型」與本篇同名，避免衝突用「蓄壓模型_父」
+    public record 蓄壓模型_父(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.蓄壓模型 上游) {}
+    // 父論文「蓄壓」與本篇同名，避免衝突用「蓄壓_父」
+    public record 蓄壓_父(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.蓄壓 上游) {}
+    public record 鋸斷(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.鋸斷 上游) {}
+    // 父論文「斷裂」與本篇同名，避免衝突用「斷裂_父」
+    public record 斷裂_父(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.斷裂 上游) {}
+    // 父論文「混戰」與本篇同名，避免衝突用「混戰_父」
+    public record 混戰_父(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.混戰 上游) {}
+    // 父論文「重建」與本篇同名，避免衝突用「重建_父」
+    public record 重建_父(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.重建 上游) {}
+
+    // 本篇「同構組織的雙重功能」包裹父論文「再生產機制」
+    // 父論文形式化中 再生產機制 ≡ 同構組織，但概念摘要只列 再生產機制，
+    // 故 Java 層包裹 再生產機制（概念摘要中的正式名稱）
+    public record 同構組織的雙重功能(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.再生產機制 上游) {}
 }

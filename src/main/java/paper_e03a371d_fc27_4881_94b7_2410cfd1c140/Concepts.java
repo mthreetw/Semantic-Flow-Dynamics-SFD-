@@ -1,13 +1,46 @@
-package paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32;
+package paper_e03a371d_fc27_4881_94b7_2410cfd1c140;
+
 
 /**
- * 《作為信息流動體系的宗教》
- * Religion as Information Flow System
- * UUID: 6bbcc745-22c0-46ea-8a0a-63bd15c94e32
+ * 《互動動力學》
+ * Interaction Dynamics
+ * UUID: e03a371d-fc27-4881-94b7-2410cfd1c140
  */
 public class Concepts {
 
-    // ── 包裹上游概念（共 42 個） ──
+    // ========================================
+    // 本篇原生概念（空 record）
+    // ========================================
+
+    public record 互動() {}
+    public record 有語意流() {}
+    public record 沒有語意流() {}
+    public record 耦合循環() {}
+    public record 雙向不透明() {}
+    public record 不可預測性相乘() {}
+    public record 功能性發散() {}
+    public record 語意流地形() {}
+    public record 估計() {}
+    public record 偏好() {}
+    public record 斷崖() {}
+    public record 禁忌() {}
+    public record 風險壓縮() {}
+    public record 關係() {}
+    public record 名聲() {}
+    public record 制度() {}
+    public record 坍塌空間() {}
+    public record 壓縮光譜() {}
+    public record 碰撞痕跡() {}
+    public record 統計殘留() {}
+    public record 驅動力不對稱() {}
+    public record 價值() {}
+    public record 貨幣() {}
+    public record 市場() {}
+
+    // ========================================
+    // 包裹上游概念：語意流動力學
+    // 40a22ff8-9d90-4e1e-82f6-1fd80917c139
+    // ========================================
 
     public record 個體(
         paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.個體 上游
@@ -177,36 +210,104 @@ public class Concepts {
         paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.死亡律 上游
     ) {}
 
-    // ── 本篇原生概念（空 record，共 30 個） ──
+    // ========================================
+    // 包裹上游概念：被迫的賭注
+    // a1b2c3d4-e5f6-7890-abcd-ef1234567890
+    // ========================================
 
-    public record 五階段模型() {}
-    public record 認知極限內() {}
-    public record 認知極限() {}
-    public record 認知極限外() {}
-    public record 認知極限外知識() {}
-    public record 死亡() {}
-    public record 蓋棺論定() {}
-    public record 來源聲稱() {}
-    public record 信號容器制度化() {}
-    public record 漂移() {}
-    public record 蠱王路徑() {}
-    public record 鎖定路徑() {}
-    public record 自組織路徑() {}
-    public record 開放通道() {}
-    public record 關閉通道() {}
-    public record 無中央通道() {}
-    public record 上行模式() {}
-    public record 準下行模式() {}
-    public record 通道指定模式() {}
-    public record 下行模式() {}
-    public record 外化路徑() {}
-    public record 內化路徑() {}
-    public record 基督教來源聲稱() {}
-    public record 伊斯蘭教來源聲稱() {}
-    public record 佛教來源聲稱() {}
-    public record 信先於知() {}
-    public record 信決定語意() {}
-    public record 框架限制() {}
-    public record 結構性限制() {}
-    public record 路徑是必要條件非充分條件() {}
+    public record 三道牆(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.三道牆 上游
+    ) {}
+
+    public record 自指律(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.自指律 上游
+    ) {}
+
+    public record 足跡律(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.足跡律 上游
+    ) {}
+
+    public record 歸納律(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.歸納律 上游
+    ) {}
+
+    public record 觀察即扭曲(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.觀察即扭曲 上游
+    ) {}
+
+    public record 初始無限律(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.初始無限律 上游
+    ) {}
+
+    public record 被迫的賭注(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.被迫的賭注 上游
+    ) {}
+
+    public record 無評價參照點(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.無評價參照點 上游
+    ) {}
+
+    public record 計算與決定的範疇分裂(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.計算與決定的範疇分裂 上游
+    ) {}
+
+    public record 三重幻覺(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.三重幻覺 上游
+    ) {}
+
+    public record 自我幻覺(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.自我幻覺 上游
+    ) {}
+
+    public record 世界幻覺(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.世界幻覺 上游
+    ) {}
+
+    public record 決策幻覺(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.決策幻覺 上游
+    ) {}
+
+    public record 智力幻覺論(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.智力幻覺論 上游
+    ) {}
+
+    public record 修正不分主體類型(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.修正不分主體類型 上游
+    ) {}
+
+    public record 認同權重(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.認同權重 上游
+    ) {}
+
+    public record 候選穿越坍塌閘門不分來源恆定稀少(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.候選穿越坍塌閘門不分來源恆定稀少 上游
+    ) {}
+
+    public record 單向坍塌(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.單向坍塌 上游
+    ) {}
+
+    public record 不可逆悔的總和(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.不可逆悔的總和 上游
+    ) {}
+
+    public record 殘響擴散(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.殘響擴散 上游
+    ) {}
+
+    public record 選單策略(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.選單策略 上游
+    ) {}
+
+    public record 互為終端的評價鏈(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.互為終端的評價鏈 上游
+    ) {}
+
+    public record 黑箱博弈(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.黑箱博弈 上游
+    ) {}
+
+    public record 速度與候選多樣性的結構性取捨(
+        paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.Concepts.速度與候選多樣性的結構性取捨 上游
+    ) {}
 }

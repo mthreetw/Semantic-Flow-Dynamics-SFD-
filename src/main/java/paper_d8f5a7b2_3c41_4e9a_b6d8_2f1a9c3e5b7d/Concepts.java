@@ -1,36 +1,36 @@
-package paper_0313a7ea_41cf_415f_b6f2_583840307a37;
+
+package paper_d8f5a7b2_3c41_4e9a_b6d8_2f1a9c3e5b7d;
 
 /**
- * 《SFD-Defense:語意流動力學防禦框架的工程驗證》
- * SFD-Defense: Engineering Validation of the Semantic Flow Dynamics Defense Framework
- * UUID: 0313a7ea-41cf-415f-b6f2-583840307a37
+ * 《台灣循環替代分析》
+ * Taiwan Cycle Replacement Analysis under Semantic Flow Dynamics
+ * UUID: d8f5a7b2-3c41-4e9a-b6d8-2f1a9c3e5b7d
  */
 public class Concepts {
 
     // 本篇原生概念（空 record）
-    public record 信號層攻擊() {}
-    public record 操縱痕跡() {}
-    public record 信實例化() {}
-    public record 漂移() {}
-    public record 初始知見障() {}
-    public record 知見障稀釋() {}
-    public record 基準距離() {}
-    public record 危險語意區() {}
-    public record 安全距離() {}
-    public record 兩距離法則() {}
-    public record 合規標注() {}
-    public record 語意潛跡現象() {}
-    public record 斷路器式模式() {}
-    public record 語意流動力學防禦框架() {}
-    public record 戒() {}
-    public record 定() {}
-    public record 累積端中斷() {}
-    public record 師() {}
-    public record 確認端中斷() {}
-    public record 慧() {}
+    public record 中國核心信在台循環() {}
+    public record 統一替代循環() {}
+    public record 缺乏內生新信號源() {}
+    public record 替代信號持續擴大() {}
+    public record 舊信號容器萎縮() {}
+    public record 代際替換不可逆() {}
+    public record 起始條件() {}
+    public record 多循環巢狀() {}
+    public record 不服() {}
+    public record 威脅激活收斂() {}
+    public record 過敏信() {}
+    public record 棘輪效應() {}
+    public record 終身過敏() {}
+    public record 脫敏() {}
+    public record 共生耗散() {}
+    public record 暫時結構() {}
+    public record 北京不動手() {}
+    public record 第一島鏈架構維持() {}
+    public record 經濟基礎穩固() {}
+    public record 結晶速度() {}
 
-    // 包裹上游概念（單一 field）
-    // 來源：paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139
+    // 包裹上游概念（單一 field） - 來自 40a22ff8-9d90-4e1e-82f6-1fd80917c139 (語意流動力學)
     public record 個體(paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.個體 上游) {}
     public record 刺激(paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.刺激 上游) {}
     public record 信(paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.信 上游) {}
@@ -74,8 +74,24 @@ public class Concepts {
     public record 損耗律(paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.損耗律 上游) {}
     public record 死亡律(paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.死亡律 上游) {}
 
-    // 來源：paper_2b91a666_fb2d_42b7_a838_c910cac42481
-    public record 身份建構(paper_2b91a666_fb2d_42b7_a838_c910cac42481.Concepts.身份建構 上游) {}
-    public record 確認時刻(paper_2b91a666_fb2d_42b7_a838_c910cac42481.Concepts.確認時刻 上游) {}
-    public record 狀態塑造類攻擊(paper_2b91a666_fb2d_42b7_a838_c910cac42481.Concepts.狀態塑造類攻擊 上游) {}
+    // 包裹上游概念（單一 field） - 來自 f47ac10b-58cc-4372-a567-0e02b2c3d479 (中國文明動力學分析)
+    public record 信模(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.信模 上游) {}
+    public record 核心信的判準(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.核心信的判準 上游) {}
+    public record 認同構成(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.認同構成 上游) {}
+    public record 死亡判準(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.死亡判準 上游) {}
+    public record 英雄(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.英雄 上游) {}
+    public record 衣服(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.衣服 上游) {}
+    public record 功能性死亡(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.功能性死亡 上游) {}
+    public record 消音(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.消音 上游) {}
+    public record 核心信(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.核心信 上游) {}
+    public record 動力機制(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.動力機制 上游) {}
+    public record 再生產機制(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.再生產機制 上游) {}
+    public record 蓄壓模型(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.蓄壓模型 上游) {}
+    public record 蓄壓(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.蓄壓 上游) {}
+    public record 鋸斷(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.鋸斷 上游) {}
+    public record 斷裂(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.斷裂 上游) {}
+    public record 混戰(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.混戰 上游) {}
+    public record 重建(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.重建 上游) {}
+
 }
+

@@ -94,8 +94,6 @@ Java 文件中只允許以下元素，未列出的一律禁止：
 ```java
 package paper_550e8400_e29b_41d4_a716_446655440000;
 
-import paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.*;
-import paper_a1b2c3d4_e5f6_7890_abcd_ef1234567890.*;
 
 /**
  * 《宗教正反饋循環與現代化碰撞動力學》

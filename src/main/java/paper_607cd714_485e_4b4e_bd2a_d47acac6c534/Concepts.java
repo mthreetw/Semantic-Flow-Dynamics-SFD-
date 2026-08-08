@@ -1,13 +1,44 @@
-package paper_6bbcc745_22c0_46ea_8a0a_63bd15c94e32;
+package paper_607cd714_485e_4b4e_bd2a_d47acac6c534;
+
 
 /**
- * 《作為信息流動體系的宗教》
- * Religion as Information Flow System
- * UUID: 6bbcc745-22c0-46ea-8a0a-63bd15c94e32
+ * 《文明力學圖：起源，存續，崩潰》
+ * Dynamics of Civilization: Origin, Persistence, Collapse
+ * UUID: 607cd714-485e-4b4e-bd2a-d47acac6c534
  */
 public class Concepts {
 
-    // ── 包裹上游概念（共 42 個） ──
+    // ── 本篇原生概念（空 record，26 個）─────────────────────────────
+
+    public record 生物預設() {}
+    public record 智力() {}
+    public record 知識() {}
+    public record 科學() {}
+    public record 天才() {}
+    public record 教育() {}
+    public record 家庭() {}
+    public record 戎() {}
+    public record 暴力壟斷者() {}
+    public record 神聖性() {}
+    public record 模板() {}
+    public record 三位一體() {}
+    public record 四域矩陣() {}
+    public record 神聖性上位() {}
+    public record 戎上位() {}
+    public record 相變() {}
+    public record 悖逆() {}
+    public record 褻瀆() {}
+    public record 神聖反噬() {}
+    public record 外部性反噬() {}
+    public record 知識自噬() {}
+    public record 修補反噬() {}
+    public record 銜尾蛇定理() {}
+    public record 致命診斷() {}
+    public record 相變單向性() {}
+    public record 盲注() {}
+
+    // ── 包裹直接上游 SFD 概念（單一 field，42 個）──────────────────
+    // 上游 UUID: 40a22ff8-9d90-4e1e-82f6-1fd80917c139
 
     public record 個體(
         paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.個體 上游
@@ -177,36 +208,4 @@ public class Concepts {
         paper_40a22ff8_9d90_4e1e_82f6_1fd80917c139.Concepts.死亡律 上游
     ) {}
 
-    // ── 本篇原生概念（空 record，共 30 個） ──
-
-    public record 五階段模型() {}
-    public record 認知極限內() {}
-    public record 認知極限() {}
-    public record 認知極限外() {}
-    public record 認知極限外知識() {}
-    public record 死亡() {}
-    public record 蓋棺論定() {}
-    public record 來源聲稱() {}
-    public record 信號容器制度化() {}
-    public record 漂移() {}
-    public record 蠱王路徑() {}
-    public record 鎖定路徑() {}
-    public record 自組織路徑() {}
-    public record 開放通道() {}
-    public record 關閉通道() {}
-    public record 無中央通道() {}
-    public record 上行模式() {}
-    public record 準下行模式() {}
-    public record 通道指定模式() {}
-    public record 下行模式() {}
-    public record 外化路徑() {}
-    public record 內化路徑() {}
-    public record 基督教來源聲稱() {}
-    public record 伊斯蘭教來源聲稱() {}
-    public record 佛教來源聲稱() {}
-    public record 信先於知() {}
-    public record 信決定語意() {}
-    public record 框架限制() {}
-    public record 結構性限制() {}
-    public record 路徑是必要條件非充分條件() {}
 }
