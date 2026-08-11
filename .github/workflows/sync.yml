@@ -12,9 +12,17 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Git LFS
+        run: |
+          git lfs install
+          git lfs track "*.png"
+          git lfs track "*.jpg"
+          git lfs track "*.pdf"
+          git add .gitattributes
+
       - name: Push to HuggingFace
         env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_TOKEN: ${{ secrets.SFDUPLOAD }}
         run: |
           git remote add hf https://user:$HF_TOKEN@huggingface.co/datasets/mthreetw/Semantic-Flow-Dynamics-SFD
           git push hf main --force
