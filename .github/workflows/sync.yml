@@ -26,6 +26,6 @@ jobs:
               repo_id="mthreetw/Semantic-Flow-Dynamics-SFD",
               repo_type="dataset",
               token=os.environ["HF_TOKEN"],
-              ignore_patterns=[".git*", ".github*"]
+              ignore_patterns=[".git*", ".github*", "README.md"]
           )
           EOF
