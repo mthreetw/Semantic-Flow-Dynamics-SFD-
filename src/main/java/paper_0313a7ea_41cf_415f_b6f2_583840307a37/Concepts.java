@@ -1,7 +1,7 @@
 package paper_0313a7ea_41cf_415f_b6f2_583840307a37;
 
 /**
- * 《SFD-Defense:語意流動力學防禦框架的工程驗證》
+ * 《語意流動力學防禦框架的工程驗證》
  * SFD-Defense: Engineering Validation of the Semantic Flow Dynamics Defense Framework
  * UUID: 0313a7ea-41cf-415f-b6f2-583840307a37
  */

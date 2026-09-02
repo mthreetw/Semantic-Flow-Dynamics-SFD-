@@ -1,7 +1,7 @@
 形式化時間戳：2026-07-30T01:14:52
 形式化手冊時間戳：2026-06-30T14:05:00
 論文手冊時間戳：2026-06-30T14:00:00
-論文：《SFD-Defense:語意流動力學防禦框架的工程驗證》
+論文：《語意流動力學防禦框架的工程驗證》
 英文標題：SFD-Defense: Engineering Validation of the Semantic Flow Dynamics Defense Framework
 UUID：0313a7ea-41cf-415f-b6f2-583840307a37
 引用：

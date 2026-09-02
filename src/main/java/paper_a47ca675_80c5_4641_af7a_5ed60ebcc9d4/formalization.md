@@ -1,7 +1,7 @@
 形式化時間戳：2026-07-30T15:02:47
 形式化手冊時間戳：2026-06-30T14:05:00
-論文：《信的形狀：語意流動力學框架下的美國文明動力學分析（修正版）》
-英文標題：The Shape of Xin: An Analysis of American Civilizational Dynamics under the Semantic Flow Dynamics Framework (Revised)
+論文：《語意流動力學框架下的美國文明動力學分析（修正版）》
+英文標題：An Analysis of American Civilizational Dynamics under the Semantic Flow Dynamics Framework (Revised)
 UUID：a47ca675-80c5-4641-af7a-5ed60ebcc9d4
 引用：
   40a22ff8-9d90-4e1e-82f6-1fd80917c139

@@ -1,8 +1,8 @@
 package paper_a47ca675_80c5_4641_af7a_5ed60ebcc9d4;
 
 /**
- * 《信的形狀：語意流動力學框架下的美國文明動力學分析（修正版）》
- * The Shape of Xin: An Analysis of American Civilizational Dynamics under the Semantic Flow Dynamics Framework (Revised)
+ * 《語意流動力學框架下的美國文明動力學分析（修正版）》
+ * An Analysis of American Civilizational Dynamics under the Semantic Flow Dynamics Framework (Revised)
  * UUID: a47ca675-80c5-4641-af7a-5ed60ebcc9d4
  */
 public class Concepts {

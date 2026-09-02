@@ -1,4 +1,4 @@
-# The Shape of Xin: An Analysis of American Civilizational Dynamics under the Semantic Flow Dynamics Framework (Revised)
+# An Analysis of American Civilizational Dynamics under the Semantic Flow Dynamics Framework (Revised)
 
 **An Empirical Demonstration of Framework Limits and Constraint Modeling**
 
