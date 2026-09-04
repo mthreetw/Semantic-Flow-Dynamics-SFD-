@@ -93,7 +93,7 @@ public class Concepts {
     public record 再生產機制(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.再生產機制 上游) {}
     public record 蓄壓模型(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.蓄壓模型 上游) {}
     public record 蓄壓(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.蓄壓 上游) {}
-    public record 鋸斷(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.鋸斷 上游) {}
+    public record 鋸(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.鋸 上游) {}
     public record 斷裂(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.斷裂 上游) {}
     public record 混戰(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.混戰 上游) {}
     public record 重建(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.重建 上游) {}

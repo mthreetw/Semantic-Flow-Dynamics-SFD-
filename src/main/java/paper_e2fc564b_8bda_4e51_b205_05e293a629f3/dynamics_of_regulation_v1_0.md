@@ -5,8 +5,6 @@ last-modified: 2026-08-31T00:00:00
 
 # Dynamics of Regulation v1.0
 
-Draft: 2026-08-31
-Status: Conceptual draft, pending formal derivation
 Upstream Dependencies: Institutional Dynamics v1.0, Power Dynamics v5.0, Dynamics of Semantic Flow v5.0, Civilizational Dynamics v5.0
 
 ---

@@ -44,7 +44,7 @@ public class StarMapGenerator {
             "(?:ext:)?([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})" +
             "\\.([\\u4e00-\\u9fff\\u3400-\\u4dbf][\\u4e00-\\u9fff\\u3400-\\u4dbf\\d\\u2080-\\u2089]*)");
 
-    /** 本篇前綴概念：{@code 本篇.中文名}。Group 1 = 概念名。 */
+    /** 本篇前綴概念：{@code 中文名}。Group 1 = 概念名。 */
     private static final Pattern RE_LOCAL_PREFIX = Pattern.compile(
             "本篇\\.([\\u4e00-\\u9fff\\u3400-\\u4dbf][\\u4e00-\\u9fff\\u3400-\\u4dbf\\d\\u2080-\\u2089]*)");
 

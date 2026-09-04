@@ -92,7 +92,8 @@ public class Concepts {
     public record 蓄壓模型_父(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.蓄壓模型 上游) {}
     // 父論文「蓄壓」與本篇同名，避免衝突用「蓄壓_父」
     public record 蓄壓_父(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.蓄壓 上游) {}
-    public record 鋸斷(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.鋸斷 上游) {}
+ // 父論文「鋸」與本篇同名，避免衝突用「鋸_父」
+    public record 鋸_父(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.鋸 上游) {}
     // 父論文「斷裂」與本篇同名，避免衝突用「斷裂_父」
     public record 斷裂_父(paper_f47ac10b_58cc_4372_a567_0e02b2c3d479.Concepts.斷裂 上游) {}
     // 父論文「混戰」與本篇同名，避免衝突用「混戰_父」

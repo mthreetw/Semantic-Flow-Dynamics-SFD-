@@ -102,7 +102,7 @@
 <script>
 // ===== 符號表：所有允許的特殊符號 =====
 const ALLOWED_SYMBOLS = new Set([
-  '∧','∨','⊕','¬','→','↔','⇒','⇔','∀','∃','∄','∈','∉',
+  '∧','∨','⊕','¬','→','←','↔','⇒','⇔','∀','∃','∄','∈','∉',
   '⊂','⊃','⊆','⊇','∪','∩','≡','≠','≈','∅','≥','≤','≫','≪',
   '≺','≻','≼','≽','∼','≅','⊥','⊤','□','◇','∝','·','×','±','∞',
   'Δ','∑','∏','√','⊢','⊬','⊨','⊭','↦','∘','∥','∣','⫫','↝',
@@ -129,7 +129,6 @@ function parseHeader(text) {
     } else if ((match = L.match(/^UUID[：:]\s*(.+)/))) {
       h.uuid = match[1].trim();
     } else if (L.match(/^引用[：:]/)) {
-      // 強化版：支援 - 無、* 無、1. 無 等格式
       h.refs = [];
       let j = i + 1;
       while (j < lines.length) {
@@ -138,7 +137,6 @@ function parseHeader(text) {
           j++;
           continue;
         }
-        // 去除常見列表符號後判斷是否為「無」
         const cleanNone = r.replace(/^[\s\-*\d.、]+/, '').trim();
         if (r === '無' || cleanNone === '無') {
           h.refs = [];
@@ -196,15 +194,12 @@ function getPendingItems(text) {
   let body = m[1].trim();
   if (body === '') return [];
 
-  // 提取所有中文字元（包含繁簡體）與英數字，過濾掉標點與空白
   const chars = body.match(/[\u4e00-\u9fa5a-zA-Z0-9]/g);
   if (!chars) return [];
 
   const cleaned = chars.join('');
-  // 如果核心語意只剩「無」，視為無待決項
   if (cleaned === '無') return [];
 
-  // 若有其他文字，逐行過濾掉單純的「無」行（含列表符號）
   const lines = body.split('\n').map(l => l.trim()).filter(l => l.length > 0);
   const result = [];
   for (const line of lines) {
@@ -304,6 +299,42 @@ function findUnknownSymbols(text) {
   return issues;
 }
 
+// ===== 新增：定義句涵蓋率檢查（非手冊原始編號，補足 exporter 需要的格式保證） =====
+// 對概念摘要中每個概念，檢查本文是否存在可辨識的定義句：
+//   1. 「概念名 ≡ ...」或「概念名(參數) ≡ ...」（主線格式）
+//   2. 「**概念名**」標題 + 區塊內「- 定義：...」或「定義：...」條列（fallback 格式）
+// 兩種格式都抓不到才算不通過——用意是抓出「連任何一種已知寫法都不符合」的概念，
+// 這些概念在匯出資料集時 definition 欄位一定會是 null。
+function checkDefinitionCoverage(text, summary) {
+  if (!summary) return null;
+  const lines = text.split('\n').map(l => l.trim());
+  const missing = [];
+
+  for (const c of summary) {
+    const name = c.cn;
+    const esc = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const directRe = new RegExp('^' + esc + '(\\([^)]*\\))?\\s*≡');
+
+    let found = lines.some(L => directRe.test(L));
+
+    if (!found) {
+      const boldRe = new RegExp('^\\*\\*' + esc + '\\*\\*\\s*$');
+      for (let i = 0; i < lines.length; i++) {
+        if (!boldRe.test(lines[i])) continue;
+        for (let j = i + 1; j < lines.length; j++) {
+          const T = lines[j];
+          if (/^\*\*.+\*\*\s*$/.test(T) || /^#{2,3} /.test(T)) break;
+          if (/^-?\s*定義[：:]/.test(T)) { found = true; break; }
+        }
+        if (found) break;
+      }
+    }
+
+    if (!found) missing.push(name);
+  }
+  return missing;
+}
+
 // ===== Validator =====
 function validate(text, filename) {
   const R = [];
@@ -314,6 +345,7 @@ function validate(text, filename) {
   const upRefs = getUpstreamUUIDs(text);
   const badSymbols = findUnknownSymbols(text);
   const badLetters = findSingleLetterVars(text);
+  const defMissing = checkDefinitionCoverage(text, summary);
 
   // --- 文件頭 ---
 
@@ -391,6 +423,14 @@ function validate(text, filename) {
     R.push({ id:'C5.9d', desc:'概念摘要中每個概念有英文翻譯（括號內）', cat:'文件結尾',
       ok: noEn.length===0,
       detail: noEn.length ? `缺少英文翻譯：${noEn.map(c=>c.cn).join('、')}` : null });
+  }
+
+  // --- 新增：定義句格式涵蓋率 ---
+
+  if (summary) {
+    R.push({ id:'C5.4a-fmt', desc:'（新增，非手冊原始編號）概念摘要中每個概念，本文有可辨識的定義句（≡ 或「- 定義：」條列）', cat:'概念約束',
+      ok: defMissing!==null && defMissing.length===0,
+      detail: defMissing && defMissing.length ? `找不到可辨識定義句：${defMissing.join('、')}` : null });
   }
 
   if (pending !== null) {
