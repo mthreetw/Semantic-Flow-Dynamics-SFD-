@@ -43,6 +43,16 @@ public class DatasetExporter {
     // fallback：定義條列行
     private static final Pattern BULLET_DEF = Pattern.compile("^-?\\s*定義[：:]\\s*(.+)$");
 
+    // 用來偵測「這一行是不是別的概念自己的定義起點」，抓最短的非空白片段接可選括號再接 ≡
+    private static final Pattern ANY_DEF_START = Pattern.compile("^(\\S+?)(\\([^)]*\\))?\\s*≡");
+
+    private static boolean isOtherConceptDefStart(String line, String currentConcept, Set<String> allConcepts) {
+        var m = ANY_DEF_START.matcher(line);
+        if (!m.find()) return false;
+        String name = m.group(1);
+        return allConcepts.contains(name) && !name.equals(currentConcept);
+    }
+
     public static void main(String[] args) throws IOException {
         List<Path> files = Files.walk(SRC_ROOT)
             .filter(p -> p.getFileName().toString().equals("formalization.md"))
@@ -77,10 +87,12 @@ public class DatasetExporter {
             return List.of();
         }
 
+        Set<String> allConcepts = exportList.keySet();
+
         List<String> output = new ArrayList<>();
         for (var entry : exportList.entrySet()) {
             output.add(buildConceptJson(entry.getKey(), entry.getValue(),
-                paperUuid, paperTitle, lines));
+                paperUuid, paperTitle, lines, allConcepts));
         }
         return output;
     }
@@ -101,7 +113,7 @@ public class DatasetExporter {
     }
 
     private static String buildConceptJson(String concept, String enName,
-            String paperUuid, String paperTitle, List<String> lines) {
+            String paperUuid, String paperTitle, List<String> lines, Set<String> allConcepts) {
 
         // 主線格式："概念名" 或 "概念名(參數)" 後面接 ≡ 及同行內容
         Pattern directDefPattern = Pattern.compile(
@@ -202,6 +214,7 @@ public class DatasetExporter {
                 if (i > defLineIdx && SECTION_HEADING.matcher(line).matches()) break;
                 if (i > defLineIdx && Pattern.matches("^\\*\\*.+\\*\\*\\s*$", line)
                         && !line.equals("**" + concept + "**")) break;
+                if (i > defLineIdx && isOtherConceptDefStart(line, concept, allConcepts)) break;
                 if (line.isEmpty() && i > defLineIdx + 3) break;
 
                 boolean hasArrow = ARROW_SYMBOLS.stream().anyMatch(line::contains);

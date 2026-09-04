@@ -328,6 +328,24 @@ public class FormalizationValidator {
                 }
             }
 
+            // C5.4g 路徑 (c)：定理（非恆等式）性質的概念——獨立 ### 小節，
+            // 內含 □ / ⊢ / ↔ 等邏輯運算式，且以自然語言標註「定理」
+            if (!found) {
+                Pattern headingRe = Pattern.compile("^#{2,3}\\s.*" + esc + ".*$");
+                outer2:
+                for (int i = 0; i < lines.size(); i++) {
+                    if (!headingRe.matcher(lines.get(i)).find()) continue;
+                    boolean hasLogicOp = false, hasTheoremWord = false;
+                    for (int j = i + 1; j < lines.size(); j++) {
+                        String T = lines.get(j);
+                        if (Pattern.compile("^#{2,3} ").matcher(T).find()) break;
+                        if (T.contains("□") || T.contains("⊢") || T.contains("↔")) hasLogicOp = true;
+                        if (T.contains("定理")) hasTheoremWord = true;
+                    }
+                    if (hasLogicOp && hasTheoremWord) { found = true; break outer2; }
+                }
+            }
+
             if (!found) missing.add(name);
         }
         return missing;
@@ -421,11 +439,11 @@ public class FormalizationValidator {
                     "缺少英文翻譯：" + noEn.stream().map(c -> c.cn).collect(Collectors.joining("、"))));
         }
 
-        // --- 定義句格式涵蓋率 ---
+        // --- 定義句格式涵蓋率（手冊 C5.4g：≡ / 定義條列 / 定理式獨立小節 三種認可形式） ---
         if (summary != null) {
-            R.add(new Result("C5.4a-fmt", "（新增，非手冊原始編號）概念摘要中每個概念，本文有可辨識的定義句（≡ 或「- 定義：」條列）", "概念約束",
+            R.add(new Result("C5.4g", "概念摘要中每個概念，本文有可辨識的形式定義（C5.4g 三種認可形式之一）", "概念約束",
                 defMissing != null && defMissing.isEmpty(),
-                (defMissing != null && !defMissing.isEmpty()) ? "找不到可辨識定義句：" + String.join("、", defMissing) : null));
+                (defMissing != null && !defMissing.isEmpty()) ? "找不到可辨識形式定義：" + String.join("、", defMissing) : null));
         }
 
         if (pending != null) {
